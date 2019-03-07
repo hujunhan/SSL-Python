@@ -21,6 +21,6 @@ ro_b_3 = Robot("blue", 5)
 ro_b_3.setSpeed(0, 2, 0)
 while True:
     control_socket.sendto(ro_b_3.getSpeedCommand(),control_addr)
-    getPos("blue",3,read_socket)
+    print(getPos("blue",3,read_socket))
     
 control_socket.close()
