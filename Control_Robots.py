@@ -18,9 +18,9 @@ vision_frame.ParseFromString(vision_data)#解析数据
 ro_blue=vision_frame.robots_blue  #读取数据中蓝色机器人的数据
 
 ro_b_3 = Robot("blue", 5)
-ro_b_3.setSpeed(0, 1, 0)
+ro_b_3.setSpeed(0, 2, 0)
 while True:
     control_socket.sendto(ro_b_3.getSpeedCommand(),control_addr)
-    print(getPos("blue",6,read_socket))
+    getPos("blue",3,read_socket)
     
 control_socket.close()

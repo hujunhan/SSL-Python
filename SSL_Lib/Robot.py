@@ -40,13 +40,6 @@ class Robot:
     def getRepCommand(self):
         return self.packet.SerializeToString()
 
-if __name__ == '__main__':
-    address = ('127.0.0.1',20011)  
-    y2=Robot("blue",3)
-    y2.SetReplacement(1,1,1)
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.sendto(y2.getSpeedCommand(), address)
-    s.close()
 
 def getPos(color,id,socket):
     vision_data=socket.recv(4096)
@@ -54,7 +47,17 @@ def getPos(color,id,socket):
     vision_frame.ParseFromString(vision_data)
     robot_blue=vision_frame.robots_blue
     robot_yellow=vision_frame.robots_yellow
+    #print(len(robot_blue),len(robot_yellow))
     if(color is "blue"):
-        return robot_blue[id-2]
+        return robot_blue[id]
     else:
-        return robot_yellow[id-2]
+        return robot_yellow[id]
+
+
+if __name__ == '__main__':
+    address = ('127.0.0.1',20011)  
+    y2=Robot("blue",3)
+    y2.SetReplacement(1,1,1)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.sendto(y2.getSpeedCommand(), address)
+    s.close()
