@@ -1,10 +1,10 @@
 import socket
-import grSim_Packet_pb2 
-import grSim_Commands_pb2
-import grSim_Replacement_pb2
-import vision_detection_pb2
-
-
+import sys
+sys.path.append('SSL_Lib/')
+import SSL_Lib.grSim_Packet_pb2 as grSim_Packet_pb2
+import SSL_Lib.grSim_Commands_pb2 as grSim_Commands_pb2
+import SSL_Lib.grSim_Replacement_pb2 as grSim_Replacement_pb2
+import SSL_Lib.vision_detection_pb2 as vision_detection_pb2
 class Robot:
     def __init__(self, color,id):
         self.packet=grSim_Packet_pb2.grSim_Packet()
