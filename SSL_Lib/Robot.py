@@ -34,10 +34,9 @@ class Robot:
         rep.dir=dir
         rep.id=self.id
         rep.yellowteam=self.isteamyellow
-    def getSpeedCommand(self):
-        #print(self.packet)
-        return self.packet.SerializeToString()
-    def getRepCommand(self):
+    def getSpeedCommand(self,debug=False):
+        if debug is True:
+            print(self.packet)
         return self.packet.SerializeToString()
 
 
