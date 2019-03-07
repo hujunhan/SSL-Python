@@ -10,4 +10,4 @@ frame = vision_detection_pb2.Vision_DetectionFrame()
 data = sk.recv(4096)
 frame.ParseFromString(data)
 blue=frame.robots_blue
-print(blue[1])
+print(blue[3])

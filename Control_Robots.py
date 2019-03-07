@@ -1,12 +1,28 @@
+import time
+import socket
 import sys
 sys.path.append('SSL_Lib/')
-import socket
 from Robot import *
+import vision_detection_pb2
 
-address = ('127.0.0.1',20011)  
-y2=Robot("blue",5)
-y2.SetReplacement(1,1,1)
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#初始化控制和读取的IP地址、端口号
+control_addr = ('127.0.0.1', 20011)
+read_addr = ('127.0.0.1', 23334)
+control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+read_socket=socket.socket(socket.AF_INET,socket.SOCK_DGRAM,0)
+read_socket.bind(read_addr)
+
+vision_frame=vision_detection_pb2.Vision_DetectionFrame()
+
+vision_data=read_socket.recv(4096)#读取信息
+vision_frame.ParseFromString(vision_data)#解析数据
+ro_blue=vision_frame.robots_blue  #读取数据中蓝色机器人的数据
+
+ro_b_3 = Robot("blue", 5)
+ro_b_3.setSpeed(0, 1, 0)
+
 while True:
-    s.sendto(y2.getSpeedCommand(), address)
-s.close()
+    control_socket.sendto(ro_b_3.getSpeedCommand(),control_addr)
+    print(getPos("blue",6,read_socket))
+    
+control_socket.close()

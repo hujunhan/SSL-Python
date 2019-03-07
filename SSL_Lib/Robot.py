@@ -2,6 +2,8 @@ import socket
 import grSim_Packet_pb2 
 import grSim_Commands_pb2
 import grSim_Replacement_pb2
+import vision_detection_pb2
+
 
 class Robot:
     def __init__(self, color,id):
@@ -25,7 +27,7 @@ class Robot:
         rc.veltangent=veltangent
         rc.spinner=False
         rc.wheelsspeed=False
-    def SetReplacement(self,x,y,dir):
+    def setReplacement(self,x,y,dir):
         rep=self.replacement.robots.add()
         rep.x=x
         rep.y=y
@@ -33,7 +35,7 @@ class Robot:
         rep.id=self.id
         rep.yellowteam=self.isteamyellow
     def getSpeedCommand(self):
-        print(self.packet)
+        #print(self.packet)
         return self.packet.SerializeToString()
     def getRepCommand(self):
         return self.packet.SerializeToString()
@@ -44,4 +46,15 @@ if __name__ == '__main__':
     y2.SetReplacement(1,1,1)
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.sendto(y2.getSpeedCommand(), address)
-    s.close()    
+    s.close()
+
+def getPos(color,id,socket):
+    vision_data=socket.recv(4096)
+    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
+    vision_frame.ParseFromString(vision_data)
+    robot_blue=vision_frame.robots_blue
+    robot_yellow=vision_frame.robots_yellow
+    if(color is "blue"):
+        return robot_blue[id-2]
+    else:
+        return robot_yellow[id-2]
