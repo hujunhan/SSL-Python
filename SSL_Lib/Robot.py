@@ -67,7 +67,23 @@ def getXYA(color,id,socket):
         return robot_blue[id].x,robot_blue[id].y,robot_blue[id].orientation
     else:
         return robot_yellow[id].x,robot_yellow[id].y,robot_yellow[id].orientation
-
+def getObstacleXY(socket):
+    vision_data=socket.recv(4096)
+    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
+    vision_frame.ParseFromString(vision_data)
+    robot_blue=vision_frame.robots_blue
+    robot_yellow=vision_frame.robots_yellow
+    
+    x=[]
+    y=[]
+    ##get obstacle x,y
+    for ro in robot_blue:
+        x.append(ro.x)
+        y.append(ro.y)
+    for ro in robot_yellow:
+        x.append(ro.x)
+        y.append(ro.y)
+    return x,y
 
 if __name__ == '__main__':
     address = ('127.0.0.1',20011)  
