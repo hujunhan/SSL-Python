@@ -12,7 +12,7 @@ class Robot:
         self.replacement=self.packet.replacement
         self.id=id
         if(color is "yellow"):
-            self.isteamyellow=True
+            self.isteamyellow=True 
         else:
             self.isteamyellow=False
     def setSpeed(self,velnormal,veltangent,velangular):
@@ -44,7 +44,12 @@ class Robot:
         return self.packet.SerializeToString()
 
 
-def getPos(color,id,socket):
+def getPos(self,socket):
+    id=self.id
+    if(self.isteamyellow is True):
+        color="yellow" 
+    else:
+        color="blue"
     vision_data=socket.recv(4096)
     vision_frame=vision_detection_pb2.Vision_DetectionFrame()
     vision_frame.ParseFromString(vision_data)
@@ -56,7 +61,12 @@ def getPos(color,id,socket):
     else:
         return robot_yellow[id]
 
-def getXYA(color,id,socket):
+def getXYA(self,socket):
+    id=self.id
+    if(self.isteamyellow is True):
+        color="yellow" 
+    else:
+        color="blue"
     vision_data=socket.recv(4096)
     vision_frame=vision_detection_pb2.Vision_DetectionFrame()
     vision_frame.ParseFromString(vision_data)
