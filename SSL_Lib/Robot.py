@@ -1,5 +1,7 @@
 import socket
 import sys
+import math
+import numpy as np
 sys.path.append('SSL_Lib/')
 import SSL_Lib.grSim_Packet_pb2 as grSim_Packet_pb2
 import SSL_Lib.grSim_Commands_pb2 as grSim_Commands_pb2
@@ -78,6 +80,14 @@ def getXYA(self,socket):
     else:
         return robot_yellow[id].x,robot_yellow[id].y,robot_yellow[id].orientation
 
+def walk(self,socket,x,y,ori):
+    x0,y0,ori0=getXYA(self,socket)
+    dis=np.sqrt(np.square(x-x0)+np.square(y-y0))
+    if((ori-ori0)*57.3>1):
+        w=0
+    else:
+        w=1
+    return 0,1,w
 
 if __name__ == '__main__':
     address = ('127.0.0.1',20011)  
