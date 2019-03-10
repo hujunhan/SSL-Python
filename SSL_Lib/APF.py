@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import random
 # 参数设置
 KP = 5.0  # 终点的吸引
-ETA = 100.0  # 障碍物的排斥
+ETA = 10.0  # 障碍物的排斥
 AREA_WIDTH = 12  # 宽度
 AREA_HIGHT = 9   #高度
 
@@ -27,7 +27,6 @@ def calculate_potential(goal_x, goal_y, obstacle_x, obstacle_y, resolution, robo
         x = ix*resolution+minx
         for iy in range(grid_y):
             y = iy*resolution+miny
-
             attractive = 0.5*KP*np.hypot(x - goal_x, y-goal_y)
             repulsive = calculate_repulsive(
                 x, y, obstacle_x, obstacle_y, robot_radius)
@@ -49,33 +48,41 @@ def calculate_repulsive(x, y, obstacle_x, obstacle_y, robot_radius):
     if DEBUG is True:
         if distance is 0:
             print("???")
-    if distance <= robot_radius:
-        if distance <= 0.1:
-            dq = 0.1
-
-        return 0.5*ETA*(1.0/distance-1.0/robot_radius)**2
-    else:
-        return 0.0
+    if distance <=0.2:
+        distance=0.1
+    return 0.5*ETA*(1.0/distance-0.0/robot_radius)**2
 
 
 def plan_potential_path(start_x, start_y, goal_x, goal_y, obstacle_x, obstacle_y, resolution, robot_radius):
     potential_map, minx, miny = calculate_potential(
         goal_x, goal_y, obstacle_x, obstacle_y, resolution, robot_radius)
 
-
-if __name__ == '__main__':
-
-    goal_x = 5.5  #目标位置
-    goal_y = -4.0  # 目标位置
+def plot_heat(obstacle_x,obstacle_y):
+    goal_x = 4  #目标位置
+    goal_y = -3.0  # 目标位置
     resolution = 0.1  # 分辨率
-    robot_radius = 0.1  # 小车半径
-
-    obstacle_x = [-1.0, 1.0, 1.0, 2.0]  # 障碍物x坐标
-    obstacle_y = [2.0, -1.5, 2.5, 3]  # 障碍物y坐标
-
+    robot_radius = 0.15  # 小车半径
     potential_map, minx, miny = calculate_potential(
         goal_x, goal_y, obstacle_x, obstacle_y, resolution, robot_radius)
     data = np.array(potential_map).T
     plt.grid=True
-    plt.pcolor(data, vmax=100, cmap=plt.cm.hot_r)
-    plt.show()
+    a = plt.pcolor(data, vmax=100, cmap=plt.cm.hot_r)
+    return a
+if __name__ == '__main__':
+
+    goal_x = 4  #目标位置
+    goal_y = -3.0  # 目标位置
+    resolution = 0.1  # 分辨率
+    robot_radius = 0.15  # 小车半径
+
+    obstacle_x = [-1.0, 1.0, 1.0, 3.5]  # 障碍物x坐标
+    obstacle_y = [2.0, -1.5, 2.5, -2.8]  # 障碍物y坐标
+    for i in range(10):
+        obstacle_x.append(random.randint(-6,6))
+        obstacle_y.append(random.randint(-4,4))
+    potential_map, minx, miny = calculate_potential(
+        goal_x, goal_y, obstacle_x, obstacle_y, resolution, robot_radius)
+    data = np.array(potential_map).T
+    plt.grid=True
+    a=plt.pcolor(data, vmax=100, cmap=plt.cm.hot_r)
+    

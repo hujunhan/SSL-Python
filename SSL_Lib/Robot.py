@@ -78,11 +78,11 @@ def getObstacleXY(socket):
     y=[]
     ##get obstacle x,y
     for ro in robot_blue:
-        x.append(ro.x)
-        y.append(ro.y)
+        x.append(ro.x/1000)
+        y.append(ro.y/1000)
     for ro in robot_yellow:
-        x.append(ro.x)
-        y.append(ro.y)
+        x.append(ro.x/1000)
+        y.append(ro.y/1000)
     return x,y
 
 if __name__ == '__main__':
