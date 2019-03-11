@@ -6,8 +6,10 @@ import SSL_Lib.grSim_Commands_pb2 as grSim_Commands_pb2
 import SSL_Lib.grSim_Replacement_pb2 as grSim_Replacement_pb2
 import SSL_Lib.vision_detection_pb2 as vision_detection_pb2
 class Robot:
-    def __init__(self, color,id):
-        self.packet=grSim_Packet_pb2.grSim_Packet()
+    def __init__(self, color,id,control_addr):
+        self.control_addr=control_addr #控制的地址
+        self.control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.packet=grSim_Packet_pb2.grSim_Packet() #packet类，由commands和replacements组成
         self.commands=self.packet.commands
         self.replacement=self.packet.replacement
         self.id=id
@@ -22,18 +24,20 @@ class Robot:
         rc.id=self.id
         rc.kickspeedx=0
         rc.kickspeedz=0
-        rc.velnormal=velnormal
-        rc.velangular=velangular
-        rc.veltangent=veltangent
+        rc.velnormal=velnormal #设置垂直速度
+        rc.velangular=velangular #设置角速度
+        rc.veltangent=veltangent #设置箭头方向速度
         rc.spinner=False
         rc.wheelsspeed=False
+        self.sendCommand() #发送指令
     def setReplacement(self,x,y,dir):
         rep=self.replacement.robots.add()
-        rep.x=x
-        rep.y=y
-        rep.dir=dir
-        rep.id=self.id
+        rep.x=x #设置位置
+        rep.y=y #设置位置
+        rep.dir=dir #设置方向
+        rep.id=self.id #设置id
         rep.yellowteam=self.isteamyellow
+        self.sendCommand() #发送指令
     def clearCommand(self):
         self.packet.Clear()
         self.commands=self.packet.commands
@@ -42,6 +46,8 @@ class Robot:
         if debug is True:
             print(self.packet)
         return self.packet.SerializeToString()
+    def sendCommand(self):
+        self.control_socket.sendto(self.getSpeedCommand(),self.control_addr)
 
 
 def getPos(color,id,socket):

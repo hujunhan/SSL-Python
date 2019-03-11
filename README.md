@@ -37,6 +37,14 @@
     * setReplacement
     * getSpeedCommand
 
+* Camera类
+  * 变量
+    * read_addr
+    * read_socket
+  * 方法
+    * update_state
+    * getRobotPos
+
 * 函数
   * getPos (获取机器人全部信息)
   * getXYA (只返回x,y坐标和方向orientation)
