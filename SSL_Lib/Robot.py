@@ -82,12 +82,23 @@ def getXYA(self,socket):
 
 def walk(self,socket,x,y,ori):
     x0,y0,ori0=getXYA(self,socket)
-    dis=np.sqrt(np.square(x-x0)+np.square(y-y0))
-    if((ori-ori0)*57.3>1):
-        w=0
+    #print(x0,y0,ori0)
+    if(100>x0):
+        return 0,0.1,0
+    if(x0-100>10):
+        return 0,-0.1,0
     else:
-        w=1
-    return 0,1,w
+        if(90>ori0*57.3):
+            return 0,0,1
+        if(ori0*57.3-90>5):
+            return 0,0,-1
+        else:
+            if(y>y0):
+                return 0,1,0
+            if(y-y0>2):
+                return 0,-1,0
+            else:
+                return 0,0,1
 
 if __name__ == '__main__':
     address = ('127.0.0.1',20011)  

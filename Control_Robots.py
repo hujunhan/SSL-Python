@@ -2,6 +2,7 @@ import time
 import socket
 import sys
 from SSL_Lib import vision_detection_pb2
+import numpy as np
 from SSL_Lib.Robot import *
 
 # 初始化控制和读取的IP地址、端口号
@@ -19,18 +20,19 @@ control_socket.sendto(ro_b_0.getSpeedCommand(), control_addr)
 for _ in range(30):  # 信号读取会有几帧的延迟，所以要将可能是缓存的位置读掉
     x, y, ori = getXYA(ro_b_0, read_socket)  # 否则会出现读取错位的问题
 ro_b_0.clearCommand()  # 清空一下命令
-ro_b_0.setSpeed(0, 0, 1) #设置要测试的命令
-control_socket.sendto(ro_b_0.getSpeedCommand(), control_addr)
+#ro_b_0.setSpeed(0, 0, 1) #设置要测试的命令
+#control_socket.sendto(ro_b_0.getSpeedCommand(), control_addr)
 time_start = time.time() #记录测试开始的时间
+ro_b_0.clearCommand()  # 清空一下命令
 while True:
-    vx,vy,w=walk(ro_b_0,read_socket,10,10,80)
+    vx,vy,w=walk(ro_b_0,read_socket,100,100,80)
     ro_b_0.setSpeed(vx,vy,w) #设置要测试的命令
     control_socket.sendto(ro_b_0.getSpeedCommand(), control_addr)
-    # control_socket.sendto(ro_b_0.getSpeedCommand(),control_addr)
-    # print(getXY("blue",0,read_socket))
+
     x, y, ori = getXYA(ro_b_0, read_socket)
+    print('vx=',vx,'vy=',vy,'w=',w)
     print('x=',x,'y=',y,'ori=',ori*57.3)
-    if(x>100 or y>100): #设置判断规则，可以是角度啊，位置啥的
+    if(np.square(x-100)+np.square(y-100)<100): #设置判断规则，可以是角度啊，位置啥的
         time_stop = time.time() #记录测试结束的时间
         ro_b_0.setSpeed(0, 0, 0) #把机器人停下来
         control_socket.sendto(ro_b_0.getSpeedCommand(), control_addr)
