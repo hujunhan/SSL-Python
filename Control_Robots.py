@@ -8,23 +8,28 @@ from SSL_Lib.Camera import *
 control_addr = ('127.0.0.1', 20011)
 read_addr = ('127.0.0.1', 23334)
 
-ro_b_0 = Robot("blue", 0,control_addr)
-camera=Camera(read_addr)
+ro_b_0 = Robot("yellow", 6,control_addr)
 
-ro_b_0.setSpeed(0, 1, 1)  # 设置要测试的命令
+camera=Camera(read_addr)
+x,y,ori=camera.getRobotPos()
+
+ro_b_0.setSpeed(0, 1, 0)  # 设置要测试的命令
 time_start = time.time()  # 记录测试开始的时间
 
 while True:
     # control_socket.sendto(ro_b_0.getSpeedCommand(),control_addr)
     # print(getXY("blue",0,read_socket))
-    x, y, ori = camera.getRobotPos()
-    if(ori[0] > 3.14/2):  # 设置判断规则，可以是角度啊，位置啥的
-        time_stop = time.time()  # 记录测试结束的时间
-        ro_b_0.setSpeed(0, 0, 0)  # 把机器人停下来
-        x, y, ori = camera.getRobotPos()
-        print('total time is ', time_stop-time_start)  # 打印出来所用的时间
-        print('now ori is ', ori[0])  # 打印出来要测试的信息
-        break
-    else:
-        pass
+    #x, y, ori = camera.getRobotVel()
+    bu,ye=camera.getRobotDict()
+    # if(ori[0] > 3.14/2):  # 设置判断规则，可以是角度啊，位置啥的
+    #     time_stop = time.time()  # 记录测试结束的时间
+    #     ro_b_0.setSpeed(0, 0, 0)  # 把机器人停下来
+    #     x, y, ori = camera.getRobotPos()
+    #     print('total time is ', time_stop-time_start)  # 打印出来所用的时间
+    #     print('now ori is ', ori[0])  # 打印出来要测试的信息
+    #     break
+    # else:
+    #     pass
+
+    print(ye[6].vel_x)
 

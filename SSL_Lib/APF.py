@@ -73,7 +73,7 @@ if __name__ == '__main__':
     goal_x = 4  #目标位置
     goal_y = -3.0  # 目标位置
     resolution = 0.1  # 分辨率
-    robot_radius = 0.15  # 小车半径
+    robot_radius = 0.2  # 小车半径
 
     obstacle_x = [-1.0, 1.0, 1.0, 3.5]  # 障碍物x坐标
     obstacle_y = [2.0, -1.5, 2.5, -2.8]  # 障碍物y坐标
@@ -85,4 +85,4 @@ if __name__ == '__main__':
     data = np.array(potential_map).T
     plt.grid=True
     a=plt.pcolor(data, vmax=100, cmap=plt.cm.hot_r)
-    
+    plt.show()

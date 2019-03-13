@@ -17,21 +17,45 @@ class Camera:
         self.vision_frame.ParseFromString(self.vision_data)
         self.robot_blue=self.vision_frame.robots_blue
         self.robot_yellow=self.vision_frame.robots_yellow
+        self.blue_dict={ro.robot_id:ro for ro in self.robot_blue}
+        self.yellow_dict={ro.robot_id:ro for ro in self.robot_yellow}
         
     
     def getRobotPos(self):
         self.update_state()
+        blue=sorted(self.blue_dict) #排序后的字典keys
+        yellow=sorted(self.yellow_dict)
         x=[]
         y=[]
         o=[]
-        for ro in self.robot_blue:
-            x.append(ro.x/1000)
-            y.append(ro.y/1000)
-            o.append(ro.orientation)
-        for ro in self.robot_yellow:
-            x.append(ro.x/1000)
-            y.append(ro.y/1000)
-            o.append(ro.orientation)
+        for ro in blue: #按id顺序添加进list
+            x.append(self.blue_dict[ro].x/1000)
+            y.append(self.blue_dict[ro].y/1000)
+            o.append(self.blue_dict[ro].orientation)
+        for ro in yellow:
+            x.append(self.yellow_dict[ro].x/1000)
+            y.append(self.yellow_dict[ro].y/1000)
+            o.append(self.yellow_dict[ro].orientation)
         return x,y,o
-
+    
+    def getRobotVel(self):
+        self.update_state()
+        x=[]
+        y=[]
+        o=[]
+        blue=sorted(self.blue_dict)
+        yellow=sorted(self.yellow_dict)
+        for ro in blue:
+            x.append(self.blue_dict[ro].vel_x/1000)
+            y.append(self.blue_dict[ro].vel_y/1000)
+            o.append(self.blue_dict[ro].rotate_vel)
+        for ro in yellow:
+            x.append(self.yellow_dict[ro].vel_x/1000)
+            y.append(self.yellow_dict[ro].vel_y/1000)
+            o.append(self.yellow_dict[ro].rotate_vel)
+        return x,y,o
+    
+    def getRobotDict(self):
+        self.update_state()
+        return self.blue_dict,self.yellow_dict
         
