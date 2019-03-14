@@ -6,7 +6,8 @@ import SSL_Lib.grSim_Commands_pb2 as grSim_Commands_pb2
 import SSL_Lib.grSim_Replacement_pb2 as grSim_Replacement_pb2
 import SSL_Lib.vision_detection_pb2 as vision_detection_pb2
 class Robot:
-    def __init__(self, color,id,control_addr):
+    def __init__(self, color,id,radius,control_addr):
+        self.radius=radius
         self.control_addr=control_addr #控制的地址
         self.control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.packet=grSim_Packet_pb2.grSim_Packet() #packet类，由commands和replacements组成

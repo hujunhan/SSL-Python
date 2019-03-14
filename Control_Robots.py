@@ -8,7 +8,7 @@ from SSL_Lib.Camera import *
 control_addr = ('127.0.0.1', 20011)
 read_addr = ('127.0.0.1', 23334)
 
-ro_b_0 = Robot("yellow", 6,control_addr)
+ro_b_0 = Robot("yellow", 6,0.15,control_addr)
 
 camera=Camera(read_addr)
 x,y,ori=camera.getRobotPos()
@@ -17,8 +17,7 @@ ro_b_0.setSpeed(0, 1, 0)  # 设置要测试的命令
 time_start = time.time()  # 记录测试开始的时间
 
 while True:
-    # control_socket.sendto(ro_b_0.getSpeedCommand(),control_addr)
-    # print(getXY("blue",0,read_socket))
+    #print(getXY("blue",0,read_socket))
     #x, y, ori = camera.getRobotVel()
     bu,ye=camera.getRobotDict()
     # if(ori[0] > 3.14/2):  # 设置判断规则，可以是角度啊，位置啥的

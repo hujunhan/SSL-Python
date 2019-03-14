@@ -12,26 +12,31 @@
 ## 机器人操作
 * 控制机器人
   ``` python
-  # 1.新建一个机器人
-  test_robot = Robot("yellow", 1)
-  # 2.设置速度或者瞬移位置
+  # 1.新建一个机器人,要依次给出颜色、id、半径、地址端口信息
+  test_robot = Robot("yellow", 1,0.15,control_addr)
+  # 2.设置速度或者瞬移位置，这条命令会自动发出控制命令
   test_robot.setSpeed(1, 1, 1)
   test_robot.setReplacement(1, 1, 2)
-  # 3.发送命令
-  control_socket.sendto(test_robot.getSpeedCommand(), control_addr)
   ```
-* 对同一个机器人进行不同操作时要注意：两个操作(setSpeed、setReplacement)之间要清空一下message，即调用机器人的clearCommand()命令
 * 读取机器人信息
   ``` python
-  getXYA("blue", 0, read_socket)
-  # or
-  getPos("blue", 0, read_socket)
+  #1.新建一个camera实例，要传入读取地址端口
+  camera=Camera(read_addr)
+  #2.读取信息，现在Camera类中有
+  x,y,ori=camera.getRobotPos()#读取全部机器人的位置信息（数组），顺序是蓝0-7，黄0-7
+  vx,vy,vori=camera.getRobotVel()#读取全部机器人的速度信息（数组），顺序是蓝0-7，黄0-7
+  blue_robot,yellow_robot=camera.getRobotDict()#读取全部机器人的全部信息（字典），通过id号来索引。
+  #3.获取想要的信息
+  xb0=x[0]#蓝色0号机器人的位置
+  vb2=vx[2]#蓝色2号机器人的x方向速度
+  oy3=yellow_robot[3].orientation#黄色3号机器人的转向
   ```
 ## 自定义类与函数
 * Robot类
   * 变量
     * color
     * id
+    * radius
   * 方法
     * setSpeed
     * setReplacement
@@ -44,7 +49,5 @@
   * 方法
     * update_state
     * getRobotPos
-
-* 函数
-  * getPos (获取机器人全部信息)
-  * getXYA (只返回x,y坐标和方向orientation)
+    * getRobotVel
+    * getRobotDict
