@@ -49,48 +49,6 @@ class Robot:
     def sendCommand(self):
         self.control_socket.sendto(self.getSpeedCommand(),self.control_addr)
 
-
-def getPos(color,id,socket):
-    vision_data=socket.recv(4096)
-    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
-    vision_frame.ParseFromString(vision_data)
-    robot_blue=vision_frame.robots_blue
-    robot_yellow=vision_frame.robots_yellow
-    #print(len(robot_blue),len(robot_yellow))
-    if(color is "blue"):
-        return robot_blue[id]
-    else:
-        return robot_yellow[id]
-
-def getXYA(color,id,socket):
-    vision_data=socket.recv(4096)
-    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
-    vision_frame.ParseFromString(vision_data)
-    robot_blue=vision_frame.robots_blue
-    robot_yellow=vision_frame.robots_yellow
-    #print(len(robot_blue),len(robot_yellow))
-    if(color is "blue"):
-        return robot_blue[id].x,robot_blue[id].y,robot_blue[id].orientation
-    else:
-        return robot_yellow[id].x,robot_yellow[id].y,robot_yellow[id].orientation
-def getObstacleXY(socket):
-    vision_data=socket.recv(4096)
-    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
-    vision_frame.ParseFromString(vision_data)
-    robot_blue=vision_frame.robots_blue
-    robot_yellow=vision_frame.robots_yellow
-    
-    x=[]
-    y=[]
-    ##get obstacle x,y
-    for ro in robot_blue:
-        x.append(ro.x/1000)
-        y.append(ro.y/1000)
-    for ro in robot_yellow:
-        x.append(ro.x/1000)
-        y.append(ro.y/1000)
-    return x,y
-
 if __name__ == '__main__':
     address = ('127.0.0.1',20011)  
     y2=Robot("blue",3)
