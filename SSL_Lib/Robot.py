@@ -48,7 +48,10 @@ class Robot:
             print(self.packet)
         return self.packet.SerializeToString()
     def sendCommand(self):
-        self.control_socket.sendto(self.getSpeedCommand(),self.control_addr)
+        try:
+            self.control_socket.sendto(self.getSpeedCommand(),self.control_addr)
+        except OSError as e:
+            print('sendto error!')
 
 if __name__ == '__main__':
     address = ('127.0.0.1',20011)  

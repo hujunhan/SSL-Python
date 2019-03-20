@@ -9,6 +9,8 @@
 * 控制信号
   * 线速度单位不明，小于m/s,即设置速度为1时，实际速度小于1m/s
   * 角速度单位约等于 0.5rad/s,即设置角速度为1时，转一圈大约需要6.28秒
+  * 最大速度 500cm/s
+  * 最大加速度 500cm/s^2
 ## 机器人操作
 * 控制机器人
   ``` python
@@ -51,3 +53,6 @@
     * getRobotPos
     * getRobotVel
     * getRobotDict
+
+* utils工具函数库
+  * cal_angle(start,goal),通过getRobotDict获取的机器人输入函数，获取`start的方向`与`start到goal的方向`之间的夹角，范围\[-pi,pi]
