@@ -9,6 +9,7 @@ import SSL_Lib.grSim_Packet_pb2 as grSim_Packet_pb2
 import socket
 import struct
 import time
+import serial
 
 
 class Robot:
@@ -23,9 +24,6 @@ class Robot:
         self.replacement = self.packet.replacement
         self.id = id
         if(color is "yellow"):
-<<<<<<< HEAD
-            self.isteamyellow=True 
-=======
             self.isteamyellow = True
         else:
             self.isteamyellow = False
@@ -50,7 +48,6 @@ class Robot:
             rc.spinner = False
             rc.wheelsspeed = False
             self.sendCommand()  # 发送指令
->>>>>>> master
         else:
             robot_num=0
             vx = int(100*veltangent)
@@ -90,41 +87,6 @@ class Robot:
         return self.packet.SerializeToString()
 
 
-<<<<<<< HEAD
-def getPos(self,socket):
-    id=self.id
-    if(self.isteamyellow is True):
-        color="yellow" 
-    else:
-        color="blue"
-    vision_data=socket.recv(4096)
-    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
-    vision_frame.ParseFromString(vision_data)
-    robot_blue=vision_frame.robots_blue
-    robot_yellow=vision_frame.robots_yellow
-    #print(len(robot_blue),len(robot_yellow))
-    if(color is "blue"):
-        return robot_blue[id]
-    else:
-        return robot_yellow[id]
-
-def getXYA(self,socket):
-    id=self.id
-    if(self.isteamyellow is True):
-        color="yellow" 
-    else:
-        color="blue"
-    vision_data=socket.recv(4096)
-    vision_frame=vision_detection_pb2.Vision_DetectionFrame()
-    vision_frame.ParseFromString(vision_data)
-    robot_blue=vision_frame.robots_blue
-    robot_yellow=vision_frame.robots_yellow
-    #print(len(robot_blue),len(robot_yellow))
-    if(color is "blue"):
-        return robot_blue[id].x,robot_blue[id].y,robot_blue[id].orientation
-    else:
-        return robot_yellow[id].x,robot_yellow[id].y,robot_yellow[id].orientation
-=======
     def sendCommand(self):
         try:
             Robot.control_socket.sendto(
@@ -133,7 +95,6 @@ def getXYA(self,socket):
             Robot.control_socket=Robot.control_socket.dup()
             print('oserror!')
             
->>>>>>> master
 
 def walk(self,socket,x,y,ori):
     x0,y0,ori0=getXYA(self,socket)

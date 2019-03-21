@@ -1,32 +1,35 @@
 import numpy as np
-def P2P(x0,y0,ori0,x,y,ori):#ori给的是弧度值
-    distance=((x-x0)**2+(y-y0)**2)**0.5
-    if distance<2.5:
-        v=0.4*x
-    elif distance>5:
-        v=0
-    else:
-        v=0.4*(5-x)
-    dest_ori=np.arctan2(y-y0,x-x0)-ori0 
-    if dest_ori>np.pi:#将目标点与当前方向的夹角调整为-180-180
-        dest_ori=dest_ori-np.pi*2
-    elif dest_ori<-np.pi:
-        dest_ori=dest_ori+np.pi*2
-    dest_x=distance*np.cos(dest_ori)#将路径分解为vx,vy方向
-    dest_y=distance*np.sin(dest_ori)
-    ori_=ori
-    ori0_=ori0
-    if ori<0:
-        ori_=ori+np.pi*2#将方向角转换成0-360
-    if ori0<0:
-        ori0_=ori0+np.pi*2
-    if (int)(ori_-ori0_)>0&(int)(ori_-ori0_)<np.pi:
-        w=0.1#正转
-    elif ori_ is ori0_:
-        w=0
-    else:
-        w=-0.1
-    vx=v*np.cos(dest_ori)
-    vy=v*np.sin(dest_ori)
-    return vx,vy,0
-
+from SSL_Lib.Robot import *
+def P2P(robot,camera,dest_x,dest_y):
+    x, y, ori = camera.getRobotPos()
+    vx,vy,w=0,0,0
+    distance0=((x[0]-dest_x)**2+(y[0]-dest_y)**2)**0.5
+    ay=(dest_x-x[0])/distance0/50
+    ax=(dest_y-y[0])/distance0/50
+    while True:
+       #print(getXY("blue",0,read_socket))
+        x, y, ori = camera.getRobotPos()
+        distance=((x[0]-dest_x)**2+(y[0]-dest_y)**2)**0.5
+        if distance>distance0+0.5:
+            setSpeed(0,0,0)
+            return x,y,-1
+        if(distance>0.5*distance0):
+            if abs(vx)<2 and abs(vy)<2:
+                vx=vx+ax
+                vy=vy+ay
+        else:
+            if abs(vx)>ax and abs(vy)>ay:
+                vx=vx-ax
+                vy=vy-ay
+            else:
+                vx,vy=0,0
+                robot.setSpeed(vx,vy,w)
+                x, y, ori = camera.getRobotPos()
+                return x,y,0#0表示未到达目的地，1表示成功到达
+        robot.setSpeed(vx,vy,w)
+        #print("vx=",vx,"vy=",vy,"w=",w)
+        #print("x=",x[0],"y=",y[0],"distance=",distance)
+        if distance<0.1:
+            #print("Success!")
+            robot.setSpeed(0,0,0)
+            return x,y,1
