@@ -12,7 +12,7 @@ class Camera:
         self.read_socket.bind(read_addr)
         self.vision_frame = vision_detection_pb2.Vision_DetectionFrame()
     def update_state(self):
-        self.vision_data=self.read_socket.recv(4096)
+        self.vision_data=self.read_socket.recv(4096*2)
         self.vision_frame=vision_detection_pb2.Vision_DetectionFrame()
         self.vision_frame.ParseFromString(self.vision_data)
         self.robot_blue=self.vision_frame.robots_blue
