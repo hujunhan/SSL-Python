@@ -6,39 +6,29 @@ import numpy as np
 from SSL_Lib.Robot import *
 from SSL_Lib.Camera import *
 from SSL_Lib.P2P import *
+import matplotlib.pyplot as plt
+from SSL_Lib.DStar import DStar
+import numpy as np
 # 初始化控制和读取的IP地址、端口号
 control_addr = ('127.0.0.2', 20011)
 read_addr = ('127.0.0.1', 23334)
 
 ro_b_0 = Robot("blue", 0,0.15,control_addr)
-
 camera=Camera(read_addr)
-success=0
-#ro_b_0.setSpeed(0, 1, 0)  # 设置要测试的命令
-time_start = time.time()  # 记录测试开始的时间
 
-xx,yy,success = P2P(ro_b_0,camera,1,1)
 x,y,ori=camera.getRobotPos()
-print("success=",success,"x=",x[0],"y=",y[0])
-if success is not -1:
-    xx,yy,success = P2P(ro_b_0,camera,1.2,1.8)
-    x,y,ori=camera.getRobotPos()
-    print("success=",success,"x=",x[0],"y=",y[0])
-if success is not -1:
-    xx,yy,success = P2P(ro_b_0,camera,2.1,3.6)
-    x,y,ori=camera.getRobotPos()
-    print("success=",success,"x=",x[0],"y=",y[0])
-if success is not -1:
-    xx,yy,success = P2P(ro_b_0,camera,2.5,-2)
-    x,y,ori=camera.getRobotPos()
-    print("success=",success,"x=",x[0],"y=",y[0])
-    # if(ori[0] > 3.14/2):  # 设置判断规则，可以是角度啊，位置啥的
-    #     time_stop = time.time()  # 记录测试结束的时间
-    #     ro_b_0.setSpeed(0, 0, 0)  # 把机器人停下来
-    #     x, y, ori = camera.getRobotPos()
-    #     print('total time is ', time_stop-time_start)  # 打印出来所用的时间
-    #     print('now ori is ', ori[0])  # 打印出来要测试的信息
-    #     break
-    # else:
-    #     pass
+goal=[0,0]
+pf = DStar(x_start=int(-400), y_start=int(0), x_goal=goal[0], y_goal=goal[1])
+for i in range(1,13):
+    pf.set_obstract(round(x[i]*100),round(y[i]*100),15)
+pf.replan()
+##至此 静态路径规划完成
+print(len(pf.path))
+print(pf.path)
+while True:
 
+    success=0
+#time_start = time.time()  # 记录测试开始的时间
+for index in range(len(pf.path)-1):
+    xx,yy,success = P2P(ro_b_0,camera,pf.path[index].x/100,pf.path[index].y/100)
+    print("index=",index,"success=",success,"nowx=",x[0],"nowy=",y[0],"wantx=",pf.path[index].x/100,"wanty=",pf.path[index].y/100)
