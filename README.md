@@ -1,4 +1,10 @@
 # 注意事项
+## 依赖包
+``` bash
+pip install protobuf
+pip install bitarray
+pip install numpy
+```
 ## 数据规定
 * 地图大小/数据单位
   * 原点为(0,0),在地图中心
