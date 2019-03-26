@@ -17,7 +17,7 @@ ro_b_0 = Robot("blue", 0,0.15,control_addr)
 camera=Camera(read_addr)
 
 x,y,ori=camera.getRobotPos()
-goal=[0,0]
+goal=[10,10]
 pf = DStar(x_start=int(-400), y_start=int(0), x_goal=goal[0], y_goal=goal[1])
 for i in range(1,13):
     pf.set_obstract(round(x[i]*100),round(y[i]*100),15)
