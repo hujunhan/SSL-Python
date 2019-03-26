@@ -134,7 +134,7 @@ class DStar:
 
     def get_successors(self, u):
         s = []
-
+        
         if self.occupied(u):
             return s
 
@@ -148,6 +148,7 @@ class DStar:
         s.append(State(u.x + 1, u.y - 1, Pair(-1, -1)))
 
         return s
+
 
     def update_start(self, x, y):
         self.s_start.x = x
@@ -243,25 +244,36 @@ class DStar:
     def replan(self):
         self.path = []
         if self.compute_shortest_path() < 0:
+            print("no path")
             return False
 
         cur = self.s_start
         if self.get_g(self.s_start) == inf:
+            print("g==inf")
             return False
+
         while cur != self.s_goal:
             self.path.append(cur)
             n = self.get_successors(cur)
+            self.update_cell(cur.x,cur.y,-10)
+            #print(cur)
 
             if len(n) == 0:
+                print("n=0")
                 return False
 
             cmin = inf
             tmin = 0
+            #smin = []
 
+            #print("here's the n from",cur)
             for i in n:
                 val = self.cost(cur, i)
                 val2 = self.true_dist(i, self.s_goal) + self.true_dist(self.s_start, i)
                 val += self.get_g(i)
+                if  i in self.cell_hash and self.cell_hash[i].cost < 0:
+                    continue
+                #print(i,"val=",val)
 
                 if self.close(val, cmin) and tmin > val2 or val < cmin:
                     tmin = val2
@@ -269,8 +281,10 @@ class DStar:
                     smin = i
 
             cur = State(smin.x, smin.y, smin.k)
-
+            #print("deceide to",cur)
+            #print("\n")
         self.path.append(self.s_goal)
+        
 
         return True
 
