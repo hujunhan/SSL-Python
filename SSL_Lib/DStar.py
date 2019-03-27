@@ -283,6 +283,18 @@ class DStar:
             for j in range(y_min,y_max):
                 if (i-x)**2+(j-y)**2<r**2:
                     self.update_cell(i,j,-1)
+        return True
+
+    def initialize_map(self,x,y):
+        for i in range(-x/2,x/2):
+            self.update_cell(i,y,-1)
+            self.update_cell(i,-y,-1)
+        for i in range(-y/2,y/2):
+            self.update_cell(-x/2,i,-1)
+            self.update_cell(x/2,i,-1)
+        return True 
+
+
 
 class State:
     def __init__(self, x, y, k):
