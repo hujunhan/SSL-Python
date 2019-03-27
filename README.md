@@ -73,7 +73,9 @@ pip install numpy
   * cal_angle(start,goal),通过getRobotDict获取的机器人输入函数，获取`start的方向`与`start到goal的方向`之间的夹角，范围\[-pi,pi]
 
 * 路径规划函数D*lite（DStar类中）
-  * pf = DStar(x_start=0, y_start=0, x_goal=5, y_goal=5) 初始化
-  * pf.set_obstract(x,y,r) 设置障碍物位置和大小，默认圆形
-  * pf.replan() 路径规划 pf.plan 内为当前路径
-  * plan[i].x   plan[i].y 内为第i步位置
+  * pf = DStar(x_start=0, y_start=0, x_goal=5, y_goal=5)  初始化
+  * pf.set_obstract(x,y,r)  设置障碍物位置和大小，默认圆形
+  * pf.replan()   路径规划 pf.plan 内为当前路径
+  * plan[i].x     plan[i].y 内为第i步位置
+  * pf.update_cell(x,y,r)     设置（x，y）点的属性，r<0视为区域不可行
+  * 不加初始化的路径规划函数仅限于数学空间下， 不限制物理空间对应尺寸,初始化函数为 initialize_map(x,y) 设置地图为x*y的尺寸，并限制地图中心为坐标系原点 
