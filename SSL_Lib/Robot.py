@@ -9,12 +9,7 @@ import SSL_Lib.grSim_Packet_pb2 as grSim_Packet_pb2
 import socket
 import struct
 import time
-<<<<<<< HEAD
-import serial
-
-=======
 from bitarray import bitarray
->>>>>>> master
 
 class Robot:
     control_socket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
