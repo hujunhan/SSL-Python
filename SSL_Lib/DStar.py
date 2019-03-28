@@ -286,12 +286,12 @@ class DStar:
         return True
 
     def initialize_map(self,x,y):
-        for i in range(-x/2,x/2):
+        for i in range(-x//2,x//2):
             self.update_cell(i,y,-1)
             self.update_cell(i,-y,-1)
-        for i in range(-y/2,y/2):
-            self.update_cell(-x/2,i,-1)
-            self.update_cell(x/2,i,-1)
+        for i in range(-y//2,y//2):
+            self.update_cell(-x//2,i,-1)
+            self.update_cell(x//2,i,-1)
         return True 
 
 
