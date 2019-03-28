@@ -6,16 +6,16 @@ import SSL_Lib.vision_detection_pb2 as vision_detection_pb2
 import SSL_Lib.grSim_Replacement_pb2 as grSim_Replacement_pb2
 import SSL_Lib.grSim_Commands_pb2 as grSim_Commands_pb2
 import SSL_Lib.grSim_Packet_pb2 as grSim_Packet_pb2
+import serial
 import socket
-import struct
-import time
 from bitarray import bitarray
 
 class Robot:
     control_socket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    def __init__(self, color, id, radius, control_addr):
+    def __init__(self, color, id, radius, control_addr='127.0.0.1'):
         self.radius = radius
         self.start_package = b'\xff\xb0\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x31'  # 实际控制小车的起始包
+        self.config_package=b'\xff\xb0\x04\x05\x06\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x85'
         self.control_addr = control_addr  # 控制的地址
         self.control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.packet = grSim_Packet_pb2.grSim_Packet()  # packet类，由commands和replacements组成
@@ -28,10 +28,20 @@ class Robot:
             self.isteamyellow = False
         if self.control_addr[0] is not '127.0.0.1':
             self.sim = False
-            self.send_start_package()
+            try:
+                self.ser=serial.Serial(control_addr,115200,timeout=0.5)
+                self.send_start_package()
+            except:
+                pass
 
     def send_start_package(self):
-        self.control_socket.sendto(self.start_package, self.control_addr)
+        while True:
+            a=self.ser.write(self.start_package)
+            a=self.ser.readline()
+            if a is not b'':
+                print('Start package has been sent!')
+                break
+        self.ser.write()
 
     def setSpeed(self, velnormal, veltangent, velangular,command=" "):
         if self.sim is True:
