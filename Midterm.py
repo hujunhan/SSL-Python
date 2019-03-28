@@ -16,7 +16,7 @@ plt.grid(True)
 blue, yellow = camera.getRobotDict()
 for ro in blue.values():
 	if ro.robot_id is not 0:
-		pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 1)
+		pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 5)
 		plt.plot(int(ro.x / 100), int(ro.y / 100), 'ob', ms=10)
 pf.replan()
 path = pf.get_path()
