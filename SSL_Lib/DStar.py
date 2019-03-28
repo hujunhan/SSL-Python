@@ -251,11 +251,13 @@ class DStar:
         if self.get_g(self.s_start) == inf:
             print("g==inf")
             return False
+        
+        #flag=False
 
         while cur != self.s_goal:
             self.path.append(cur)
             n = self.get_successors(cur)
-            self.update_cell(cur.x,cur.y,-10)
+            self.update_cell(cur.x,cur.y,100)
             #print(cur)
 
             if len(n) == 0:
@@ -265,15 +267,18 @@ class DStar:
             cmin = inf
             tmin = 0
             #smin = []
-
-            #print("here's the n from",cur)
+            #if abs(cur.x-self.s_start.x)<20: 
+            #    flag=True
+            #if flag:
+            #    print("here's the n from",cur)
             for i in n:
                 val = self.cost(cur, i)
                 val2 = self.true_dist(i, self.s_goal) + self.true_dist(self.s_start, i)
-                val += self.get_g(i)
+                val += self.get_rhs(i)
                 if  i in self.cell_hash and self.cell_hash[i].cost < 0:
                     continue
-                #print(i,"val=",val)
+                #if flag:
+                #    print(i,"val=",val)
 
                 if self.close(val, cmin) and tmin > val2 or val < cmin:
                     tmin = val2
@@ -281,8 +286,9 @@ class DStar:
                     smin = i
 
             cur = State(smin.x, smin.y, smin.k)
-            #print("deceide to",cur)
-            #print("\n")
+            #if flag:
+            #    print("deceide to",cur)
+            #    print("\n")
         self.path.append(self.s_goal)
         
 
