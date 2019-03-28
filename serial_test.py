@@ -3,7 +3,7 @@ from bitarray import bitarray
 import struct
 from SSL_Lib.Robot import *
 #打开串口
-serialPort="COM5"   #串口
+serialPort="COM3"   #串口
 baudRate=115200      #波特率
 ser=serial.Serial(serialPort,baudRate,timeout=0.5)  
 print(ser.isOpen())
@@ -14,7 +14,7 @@ package_1=      b'\xff\x00\x01\x01\x26\x41\x90\x28\x00\x00\x00\x00\x00\x00\x00\x
 package_2=      b'\xff\x00\x01\x01\x06\x40\x00\x28\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00'
 #收发数据
 address = ('128.0.0.1', 20011)
-y2 = Robot("blue", 3,0.15,address)
+y2 = Robot("blue", 3,0.15,'COM5')
 a=y2.setSpeed(0,0.1,0)
 pac_test=a
 while True:
