@@ -35,12 +35,12 @@ def statics_map():
 	for ro in blue.values():
 		if ro.robot_id is not 0:
 			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 5)
-			plt.plot(int(ro.x / 100), int(ro.y / 100), 'ob', ms=5)
+			plt.plot(int(ro.x / 100), int(ro.y / 100), 'ob', ms=10)
 
 	for ro in yellow.values():
 		if ro.robot_id is not 0:
 			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 5)
-			plt.plot(int(ro.x / 100), int(ro.y / 100), 'oy', ms=5)
+			plt.plot(int(ro.x / 100), int(ro.y / 100), 'oy', ms=10)
 
 	pf.replan()
 	path = pf.get_path()
@@ -50,15 +50,19 @@ plt.grid(True)
 #主逻辑
 i=0
 ro_b_0=Robot('blue',0,0.15,'COM')
+vx=0
+vy=0
+path=statics_map()
 while True:
 	plt.clf()
-	
 	path=statics_map()
 	path_x=path[i].x
 	path_y=path[i].y
-	xx,yy,success,vx,vy = P2P(ro_b_0,camera,path_x,path_y)
-	if success is 1:
-		i=i+1
+	# xx,yy,success,vx,vy = P2P(ro_b_0,camera,path_x,path_y,vx,vy)
+	# if success is 1:
+	# 	i=i+1
+	# 	if i is len(path):
+	# 		break
 	x = []
 	y = []
 	for s in path:
@@ -67,4 +71,4 @@ while True:
 	plt.plot(x, y)
 	# plt.plot(s.x,s.y,'')
 	plt.show()
-	plt.close()
+	plt.pause(0.01)

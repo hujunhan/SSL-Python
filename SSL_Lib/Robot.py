@@ -15,7 +15,7 @@ from bitarray import bitarray
 class Robot:
 	control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-	def __init__(self, color, id, radius, control_addr='127.0.0.1'):
+	def __init__(self, color, id, radius, control_addr='127.0.0.1',ser=None):
 		self.radius = radius
 		self.start_package = b'\xff\xb0\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x31'  # 实际控制小车的起始包
 		self.config_package = b'\xff\xb0\x04\x05\x06\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x85'
@@ -24,6 +24,7 @@ class Robot:
 		self.packet = grSim_Packet_pb2.grSim_Packet()  # packet类，由commands和replacements组成
 		self.commands = self.packet.commands
 		self.replacement = self.packet.replacement
+		self.ser=ser
 		self.id = id
 		if (color is "yellow"):
 			self.isteamyellow = True
@@ -105,6 +106,8 @@ class Robot:
 			commands += b'\x07'
 			for i in range(3):
 				commands += b'\x00'
+			if self.ser is not None:
+				self.ser.write(commands)
 			return commands
 
 	def getVelBitarr(self, v):
