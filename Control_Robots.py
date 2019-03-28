@@ -19,25 +19,20 @@ x,y,ori=camera.getRobotPos()
 #ro_b_0.setSpeed(0, 1, 0)  # 设置要测试的命令
 time_start = time.time()  # 记录测试开始的时间
 x, y, ori = camera.getRobotPos()
-dest_x=0
-dest_y=0
-vy=0
-vx=0
-distance0=((x[0]-dest_x)**2+(y[0]-dest_y)**2)**0.5
-ay=(dest_x-x[0])/distance0/20
-ax=(dest_y-y[0])/distance0/20
-print(x[0])
-pf = DStar((int)(x[0]*100), (int)(y[0]*100), 0, 0)
-pf.set_obstract(-250,0,100)  
-pf.set_obstract(-150,0,100)  
-pf.set_obstract(-50,0,100)  
+dest_x,dest_y=0,0
+vy,vy=0,0
+
+pf = DStar((int)(x[0]*100), (int)(y[0]*100), dest_x, dest_y)
+pf.set_obstract(-350,0,40)  
+pf.set_obstract(-250,0,40)  
+pf.set_obstract(-150,0,40)  
+pf.set_obstract(-50,0,40)  
 pf.replan() 
 i=0
+
 print(pf.get_path())
-print(pf.get_path()[i].y)
 len=pf.get_path().__len__()
-path_x=x[0]
-path_y=y[0]
+path_x,path_y=x[0],y[0]
 while True:
     if i is len or i > len:
         break
@@ -50,7 +45,7 @@ while True:
     
     xx,yy,success = P2P(ro_b_0,camera,path_x,path_y)
     x,y,ori=camera.getRobotPos()
-    print("success=",success,"x=",x[0],"y=",y[0])
+    print("success=",success,"x=",x[0],"y=",y[0],"i=",i,"len=",len)
     if success is 1:
         i=i+1
 
