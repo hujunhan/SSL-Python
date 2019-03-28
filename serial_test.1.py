@@ -13,5 +13,5 @@ c7 = bitarray(8)
 
 address = ('128.0.0.1', 20011)
 y2 = Robot("blue", 3,0.15,address)
-a=y2.setSpeed(1,1,0)
+a=y2.setSpeed(0,0,0.01)
 print(a)

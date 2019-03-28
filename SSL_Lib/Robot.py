@@ -1,4 +1,6 @@
 import sys
+import math
+import numpy as np
 sys.path.append('SSL_Lib/')
 import SSL_Lib.vision_detection_pb2 as vision_detection_pb2
 import SSL_Lib.grSim_Replacement_pb2 as grSim_Replacement_pb2
@@ -146,6 +148,25 @@ class Robot:
             print('oserror!')
             
 
+def walk(self,socket,x,y,ori):
+    x0,y0,ori0=getXYA(self,socket)
+    #print(x0,y0,ori0)
+    if(100>x0):
+        return 0,0.1,0
+    if(x0-100>10):
+        return 0,-0.1,0
+    else:
+        if(90>ori0*57.3):
+            return 0,0,1
+        if(ori0*57.3-90>5):
+            return 0,0,-1
+        else:
+            if(y>y0):
+                return 0,1,0
+            if(y-y0>2):
+                return 0,-1,0
+            else:
+                return 0,0,1
 
 if __name__ == '__main__':
     address = ('128.0.0.1', 20011)
