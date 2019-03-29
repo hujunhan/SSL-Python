@@ -1,74 +1,62 @@
+import socket
+
 from SSL_Lib.Robot import Robot
 from SSL_Lib.Camera import Camera
 from SSL_Lib.DStar import DStar
-from SSL_Lib.P2P import P2P
-import matplotlib.pyplot as plt
+from SSL_Lib.utils import *
+from SSL_Lib.DBG import DBG
 import serial
+import sys
 import time
-FIRST_CONNETION=False
-serialPort="COM3"   #串口
-baudRate=115200      #波特率
-start_package = b'\xff\xb0\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x31'
-config_package= b'\xff\xb0\x04\x05\x06\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x85'#频点为0
+FIRST_CONNECTION=False
+serialPort = "COM3"  # 串口
+
+# 初始化控制和读取的IP地址、端口号
+control_addr = ('127.0.0.1', 20011)
 read_addr = ('127.0.0.1', 23333)
 camera = Camera(read_addr)
-# 定义我们自己的小车
-player = Robot('blue', 0, 0.15, 'COM5')
+debug = DBG()
+
+#ser = serial.Serial(serialPort, 115200, timeout=0.5)
+if FIRST_CONNECTION:
+	config_serial(serialPort)
 
 
-ser=serial.Serial(serialPort,baudRate,timeout=0.5)
-print('serial port open: ',ser.isOpen())
-print ("参数设置：串口=%s ，波特率=%d"%(serialPort,baudRate))
-if FIRST_CONNETION:
-	while True:
-		a=ser.write(start_package)
-		a=ser.readline()
-		if a is not b'':
-			print('Start package has been sent!')
-			break
-	ser.write(config_package)
+# 主逻辑
 
-def statics_map():
-	pf = DStar(x_start=-50, y_start=-5, x_goal=58, y_goal=10)  # 初始化
-	pf.initialize_map(120, 90)
-	blue, yellow = camera.getRobotDict()
-	for ro in blue.values():
-		if ro.robot_id is not 0:
-			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 5)
-			plt.plot(int(ro.x / 100), int(ro.y / 100), 'ob', ms=10)
+#1.初始化要控制的机器人
+ro_b_0 = Robot('blue', 0, 0.15, control_addr=control_addr)
+blue, yellow = camera.getRobotDict()  # 读取初始信息
+start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
+end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称点
+print(start_point)
+#2.目前只测试静态避障，所以只生成一次路径规划
+path = statics_map(start_point,end_point,camera) #从Dstar获取路径信息
+debug.addPath(path) #将路径画出来
+debug.sendDebugMessage() #debug信息发送
+i = 0
 
-	for ro in yellow.values():
-		if ro.robot_id is not 0:
-			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 5)
-			plt.plot(int(ro.x / 100), int(ro.y / 100), 'oy', ms=10)
-
-	pf.replan()
-	path = pf.get_path()
-	return path
-plt.ion()
-plt.grid(True)
-#主逻辑
-i=0
-ro_b_0=Robot('blue',0,0.15,'COM')
-vx=0
-vy=0
-path=statics_map()
 while True:
-	plt.clf()
-	path=statics_map()
-	path_x=path[i].x
-	path_y=path[i].y
-	# xx,yy,success,vx,vy = P2P(ro_b_0,camera,path_x,path_y,vx,vy)
-	# if success is 1:
-	# 	i=i+1
-	# 	if i is len(path):
-	# 		break
-	x = []
-	y = []
-	for s in path:
-		x.append(s.x)
-		y.append(s.y)
-	plt.plot(x, y)
-	# plt.plot(s.x,s.y,'')
-	plt.show()
-	plt.pause(0.01)
+	blue, yellow = camera.getRobotDict()
+	path_x = path[i].x
+	path_y = path[i].y
+	a = calc_distance(blue[0], [path_x, path_y])
+	if a < 10:
+		i = i + 1
+		if i is len(path):##回到起始点
+			ro_b_0.setSpeed(0, 0, 0)
+			input('Type anything to go back! ') #随便打点什么
+			blue, yellow = camera.getRobotDict()  # 读取初始信息
+			start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
+			end_point = [start_point[1], start_point[0]]  # 设置机器人终点为对称点
+			path = statics_map(start_point, end_point, camera)  # 从Dstar获取路径信息
+			debug=DBG()
+			debug.addPath(path)
+			debug.sendDebugMessage()
+			i=0
+			ro_b_0.setSpeed(0,0,1)
+			time.sleep(3)
+			ro_b_0.setSpeed(0,0,0)
+			continue
+		continue
+	chase(blue[0], [path_x, path_y],ro_b_0) ##最最简单的路径跟踪

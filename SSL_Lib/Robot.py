@@ -15,7 +15,7 @@ from bitarray import bitarray
 class Robot:
 	control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-	def __init__(self, color, id, radius, control_addr='127.0.0.1',ser=None):
+	def __init__(self, color, id, radius, control_addr='127.0.0.1', ser=None):
 		self.radius = radius
 		self.start_package = b'\xff\xb0\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x31'  # 实际控制小车的起始包
 		self.config_package = b'\xff\xb0\x04\x05\x06\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x85'
@@ -24,14 +24,16 @@ class Robot:
 		self.packet = grSim_Packet_pb2.grSim_Packet()  # packet类，由commands和replacements组成
 		self.commands = self.packet.commands
 		self.replacement = self.packet.replacement
-		self.ser=ser
+		self.ser = ser
 		self.id = id
 		if (color is "yellow"):
 			self.isteamyellow = True
 		else:
 			self.isteamyellow = False
-		if self.control_addr[0] is not '127.0.0.1':
-			self.sim = False
+		if self.ser is None:
+			self.sendser = False
+		else:
+			self.sendser = True
 
 	def send_start_package(self):
 		while True:
@@ -43,20 +45,20 @@ class Robot:
 		self.ser.write(self.config_package)
 
 	def setSpeed(self, velnormal, veltangent, velangular, command=" "):
-		if self.sim is True:
-			self.commands.timestamp = 0
-			self.commands.isteamyellow = self.isteamyellow
-			rc = self.commands.robot_commands.add()
-			rc.id = self.id
-			rc.kickspeedx = 0
-			rc.kickspeedz = 0
-			rc.velnormal = velnormal  # 设置垂直速度
-			rc.velangular = velangular  # 设置角速度
-			rc.veltangent = veltangent  # 设置箭头方向速度
-			rc.spinner = False
-			rc.wheelsspeed = False
-			self.sendCommand()  # 发送指令
-		else:
+		self.commands.timestamp = 0
+		self.commands.isteamyellow = self.isteamyellow
+		rc = self.commands.robot_commands.add()
+		rc.id = self.id
+		rc.kickspeedx = 0
+		rc.kickspeedz = 0
+		rc.velnormal = velnormal  # 设置垂直速度
+		rc.velangular = velangular  # 设置角速度
+		rc.veltangent = veltangent  # 设置箭头方向速度
+		rc.spinner = False
+		rc.wheelsspeed = False
+		self.sendCommand()  # 发送指令
+
+		try:
 			commands = b'\xff'
 			commands += b'\x00'
 			commands += b'\x01'
@@ -108,7 +110,9 @@ class Robot:
 				commands += b'\x00'
 			if self.ser is not None:
 				self.ser.write(commands)
-			return commands
+		except:
+			pass
+		return 'commands sent!'
 
 	def getVelBitarr(self, v):
 		# 100
