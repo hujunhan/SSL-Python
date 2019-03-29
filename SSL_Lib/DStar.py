@@ -150,6 +150,7 @@ class DStar:
         return s
 
 
+
     def update_start(self, x, y):
         self.s_start.x = x
         self.s_start.y = y

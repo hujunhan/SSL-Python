@@ -40,11 +40,10 @@ def statics_map(start_point, end_point, camera):
 	blue, yellow = camera.getRobotDict()
 	for ro in blue.values():
 		if ro.robot_id is not 0:
-			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 2)
+			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 3)
 
 	for ro in yellow.values():
-		if ro.robot_id is not 0:
-			pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 2)
+		pf.set_obstract(int(ro.x / 100), int(ro.y / 100), 3)
 
 	pf.replan()
 	path = pf.get_path()
@@ -52,9 +51,10 @@ def statics_map(start_point, end_point, camera):
 
 
 ##最最简单的路径跟踪
-def chase(robot, goal, control_robot):
+def chase(robot, goal, control_robot,speed,point_dis):
+	t=point_dis/speed
 	angle = calc_angle(robot, goal)
-	a = control_robot.setSpeed(0, 2, -angle)
+	a = control_robot.setSpeed(0, speed, -angle*2)
 
 
 def config_serial(serialPort):
