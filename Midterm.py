@@ -10,7 +10,6 @@ import sys
 import time
 FIRST_CONNECTION=False
 serialPort = "COM3"  # 串口
-
 # 初始化控制和读取的IP地址、端口号
 control_addr = ('127.0.0.1', 20011)
 read_addr = ('127.0.0.1', 23333)
@@ -32,20 +31,25 @@ end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称
 print(start_point)
 #2.目前只测试静态避障，所以只生成一次路径规划
 path = statics_map(start_point,end_point,camera) #从Dstar获取路径信息
+path=path[::10]
+print(path)
 debug.addPath(path) #将路径画出来
 debug.sendDebugMessage() #debug信息发送
 i = 0
-
+goal_point=[path[-1].x,path[-1].y]
 while True:
 	blue, yellow = camera.getRobotDict()
 	path_x = path[i].x
 	path_y = path[i].y
-	a = calc_distance(blue[0], [path_x, path_y])
-	if a < 10:
+	point_dis = calc_distance(blue[0], [path_x, path_y])
+	goal_dis=calc_distance(blue[0],goal_point)
+	if point_dis < 2:
 		i = i + 1
 		if i is len(path):##回到起始点
 			ro_b_0.setSpeed(0, 0, 0)
-			input('Type anything to go back! ') #随便打点什么
+			a=input('Type anything to go back or type q to break ') #随便打点什么
+			if a is 'q':
+				break
 			blue, yellow = camera.getRobotDict()  # 读取初始信息
 			start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
 			end_point = [start_point[1], start_point[0]]  # 设置机器人终点为对称点
