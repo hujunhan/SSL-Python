@@ -38,6 +38,10 @@ class DBG():
 		debug_msg.line.FORWARD = False
 		debug_msg.line.BACK = False
 
+
 	def addPath(self, path):
 		for i in range(len(path) - 1):
-			self.addLine(path[i].x * 10, path[i].y * 10, path[i + 1].x * 10, path[i + 1].y * 10)
+			self.addLine(path[i].x , path[i].y , path[i + 1].x , path[i + 1].y )
+	def addpath_dwa(self,path):
+		for i in range(len(path)-1):
+			self.addLine(path[i][0],path[i][1],path[i+1][0],path[i+1][1])

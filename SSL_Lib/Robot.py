@@ -66,7 +66,6 @@ class Robot:
 			vx = int(100 * veltangent)
 			vy = int(100 * velnormal)
 			w = int(velangular * 40)
-
 			sign_vx = 0 if vx >= 0 else 1
 			sign_vy = 0 if vy >= 0 else 1
 			sign_w = 0 if w >= 0 else 1
@@ -81,7 +80,7 @@ class Robot:
 			# define vx,vy,w sign
 			c4[2] = sign_vx
 			c5[4] = sign_vy
-			c6[7] = sign_w
+			c6[6] = sign_w
 
 			# calc vx,vy,w bit array
 			vxb = self.getVelBitarr(abs(vx))
