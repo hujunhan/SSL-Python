@@ -20,7 +20,7 @@ blue,yellow=camera.getRobotDict()
 
 print(blue[0])
 x = np.array([blue[0].x/1000, blue[0].y/1000, blue[0].orientation, 0.0, 0.0])
-goal=np.array([-blue[0].x/1000,blue[0].y/1000])
+goal=np.array([blue[0].x/1000+1,blue[0].y/1000+1])
 
 print('start at ',x)
 print('goal is ',goal)
@@ -31,7 +31,6 @@ for ro in blue.values():
 		ob.append([ro.x/1000,ro.y/1000])
 for ro in yellow.values():
 	ob.append(([ro.x/1000,ro.y/1000]))
-
 obnp=np.array(ob)
 
 
@@ -41,8 +40,8 @@ config=Config()
 traj=np.array(x)
 while True:
 	u, ltraj = dwa_control(x, u, config, goal, obnp,ro_b_0,camera)
-	print(ltraj)
-	print('-------------')
+	print('u is ',u)
+	#a=input('??????????')
 	x=sim_motion(ro_b_0,u,camera)
 	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
 		print("Goal!!")
@@ -50,4 +49,5 @@ while True:
 	debug=DBG()
 	debug.addpath_dwa(ltraj)
 	debug.sendDebugMessage()
+	time.sleep(0.01)
 

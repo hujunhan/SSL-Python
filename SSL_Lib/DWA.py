@@ -22,18 +22,18 @@ class Config():
 
 	def __init__(self):
 		# robot parameter
-		self.max_speed = 1.0  # [m/s]
-		self.min_speed = -0.5  # [m/s]
-		self.max_yawrate = 40.0 * math.pi / 180.0  # [rad/s]
+		self.max_speed = 2.0  # [m/s]
+		self.min_speed = -2.0  # [m/s]
+		self.max_yawrate = 360.0 * math.pi / 180.0  # [rad/s]
 		self.max_accel = 0.2  # [m/ss]
 		self.max_dyawrate = 40.0 * math.pi / 180.0  # [rad/ss]
-		self.v_reso = 0.01  # [m/s]
-		self.yawrate_reso = 0.1 * math.pi / 180.0  # [rad/s]
-		self.dt = 0.01  # [s]
-		self.predict_time = 0.5  # [s]
-		self.to_goal_cost_gain = 1.0
+		self.v_reso = 0.02  # [m/s]
+		self.yawrate_reso = 30 * math.pi / 180.0  # [rad/s]
+		self.dt = 0.1  # [s]
+		self.predict_time = 1  # [s]
+		self.to_goal_cost_gain = 10.0
 		self.speed_cost_gain = 1.0
-		self.robot_radius = 0.15  # [m]
+		self.robot_radius = 0.3  # [m]
 
 
 def motion(x, u, dt):
@@ -51,7 +51,7 @@ def motion(x, u, dt):
 
 def sim_motion(robot, u, camera):
 	#print(u)
-	robot.setSpeed(0, u[0]*10, -u[1]*1)
+	robot.setSpeed(0, u[0]*1, u[1]*1)
 	blue,yellow=camera.getRobotDict()
 	x = np.array([blue[0].x/1000, blue[0].y/1000, blue[0].orientation, blue[0].vel_x/1000, blue[0].rotate_vel])
 	#print(x)
@@ -72,6 +72,7 @@ def calc_dynamic_window(x, config):
 	#  [vmin,vmax, yawrate min, yawrate max]
 	dw = [max(Vs[0], Vd[0]), min(Vs[1], Vd[1]),
 		  max(Vs[2], Vd[2]), min(Vs[3], Vd[3])]
+
 	return dw
 
 
@@ -101,12 +102,15 @@ def calc_final_input(x, u, dw, config, goal, ob,robot,camera):
 			traj = calc_trajectory(xinit, v, y, config,robot,camera)
 
 			# calc cost
-			to_goal_cost = calc_to_goal_cost(traj, goal, config)
+			#to_goal_cost = calc_to_goal_cost(traj, goal, config)
+			to_goal_cost=calc_to_goal_distance_cost(traj,goal,config)
 			speed_cost = config.speed_cost_gain * \
 						 (config.max_speed - traj[-1, 3])
 			ob_cost = calc_obstacle_cost(traj, ob, config)
 			# print(ob_cost)
-
+			print('goal ',to_goal_cost)
+			print('speed ',speed_cost)
+			print('ob',ob_cost)
 			final_cost = to_goal_cost + speed_cost + ob_cost
 
 			# print (final_cost)
@@ -153,6 +157,11 @@ def calc_to_goal_cost(traj, goal, config):
 	error_angle = math.acos(error)
 	cost = config.to_goal_cost_gain * error_angle
 
+	return cost
+
+def calc_to_goal_distance_cost(traj,goal,config):
+	distance=math.sqrt((goal[0]-traj[-1,0])**2+(goal[1]-traj[-1,1])**2)
+	cost=config.to_goal_cost_gain*distance
 	return cost
 
 
