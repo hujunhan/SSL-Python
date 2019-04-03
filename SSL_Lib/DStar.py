@@ -1,4 +1,4 @@
-from math import sqrt, pow, inf
+from math import inf, pow, sqrt
 from queue import Queue
 
 
@@ -294,7 +294,7 @@ class DStar:
 
         return True
 
-    def set_obstract(self,x,y,r):
+    def set_obstract(self,x,y,r,val):
         x_max=int(x+r)+1
         x_min=int(x-r)
         y_max=int(y+r)+1
@@ -302,7 +302,7 @@ class DStar:
         for i in range(x_min,x_max):
             for j in range(y_min,y_max):
                 if (i-x)**2+(j-y)**2<r**2:
-                    self.update_cell(i,j,-1)
+                    self.update_cell(i,j,val)
 
     def initialize_map(self,x,y):
         for i in range(int(-x/2),int(x/2)):
@@ -312,6 +312,25 @@ class DStar:
             self.update_cell(int(-x/2),i,-1)
             self.update_cell(int(x/2),i,-1)
         return True 
+    
+
+    def shorter_the_path(self,e):
+        flag=True
+        while flag:
+            flag=False 
+            n=len(self.path)    
+            index=n-1
+            while index>=2:
+                d=abs(self.path[index].x+self.path[index-2].x-2*self.path[index-1].x)+\
+                    abs(self.path[index].y+self.path[index-2].y-2*self.path[index-1].y)
+                if d<=e:
+                    del self.path[index-1]
+                    flag=True
+                index=index-2
+        return True
+
+        
+
 
 
 class State:
