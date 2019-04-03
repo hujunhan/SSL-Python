@@ -41,9 +41,7 @@ class DBG():
 
 	def addPath(self, path):
 		for i in range(len(path) - 1):
-			self.addLine(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y)
-
-	def addpath_dwa(self, path):
-		for i in range(len(path) - 1):
-			self.addLine(path[i,0]*100, path[i,1]*100, path[i + 1,0]*100, path[i + 1,1]*100)
-
+			self.addLine(path[i].x , path[i].y , path[i + 1].x , path[i + 1].y )
+	def addpath_dwa(self,path):
+		for i in range(len(path)-1):
+			self.addLine(path[i][0]*100,path[i][1]*100,path[i+1][0]*100,path[i+1][1]*100)

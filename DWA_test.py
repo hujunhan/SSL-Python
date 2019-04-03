@@ -22,8 +22,8 @@ camera = Camera(read_addr)
 blue, yellow = camera.getRobotDict()
 
 print(blue[0])
-x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, 0.0, 0.0,0.0])
-goal = np.array([-blue[0].x / 1000, -blue[0].y / 1000])
+x = np.array([blue[0].x/1000, blue[0].y/1000, blue[0].orientation, 0.0, 0.0])
+goal=np.array([blue[0].x/1000+1,blue[0].y/1000+1])
 
 print('start at ', x)
 print('goal is ', goal)
@@ -33,28 +33,19 @@ for ro in blue.values():
 	if ro.robot_id is not 0:
 		ob_temp.append([ro.x / 1000, ro.y / 1000])
 for ro in yellow.values():
-	ob_temp.append(([ro.x / 1000, ro.y / 1000]))
-while True:
-	ro_b_0.setSpeed(0,0,4)
-	blue,yellow=camera.getRobotDict()
-	print(blue[0].rotate_vel*1000)
-ob = np.array(ob_temp)
-print('ob = ', ob)
+	ob.append(([ro.x/1000,ro.y/1000]))
+obnp=np.array(ob)
+
 
 u = np.array([0.0, 0.0])
 config = Config()
 
 traj = np.array(x)
 while True:
-
-	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
-	#print(u)
-	print('-------------')
-	#x=motion(x,u,config.dt)
-	x = sim_motion(ro_b_0, u, camera)
+	u, ltraj = dwa_control(x, u, config, goal, obnp,ro_b_0,camera)
 	print('u is ',u)
-	print('real u is ',x[-2],' ',x[-1])
-
+	#a=input('??????????')
+	x=sim_motion(ro_b_0,u,camera)
 	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
 		print("Goal!!")
 		break
@@ -72,4 +63,5 @@ while True:
 	debug = DBG()
 	debug.addpath_dwa(ltraj)
 	debug.sendDebugMessage()
+	time.sleep(0.01)
 
