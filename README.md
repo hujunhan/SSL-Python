@@ -1,4 +1,10 @@
 # 注意事项
+## 依赖包
+``` bash
+pip install protobuf
+pip install bitarray
+pip install numpy
+```
 ## 数据规定
 * 地图大小/数据单位
   * 原点为(0,0),在地图中心
@@ -8,9 +14,17 @@
 
 * 控制信号
   * 线速度单位不明，小于m/s,即设置速度为1时，实际速度小于1m/s
+  * 角速度单位约等于 0.5rad/s,即设置角速度为$1$时，转一圈大约需要6.28秒
+
+* 机器人参数
+  * 读取位置信号时，得到的数据单位是mm，12000*9000 
+  * 读取角度信号时，得到的数据是按照弧度制
+  * 角度信号0°时向右，随角度增加，顺时针旋转(-180,180)
+  * 线速度单位不明，小于m/s,即设置速度为1时，实际速度小于1m/s
   * 角速度单位约等于 0.5rad/s,即设置角速度为1时，转一圈大约需要6.28秒
   * 最大速度 500cm/s
   * 最大加速度 500cm/s^2
+
 ## 机器人操作
 * 控制机器人
   ``` python
@@ -53,6 +67,14 @@
     * getRobotPos
     * getRobotVel
     * getRobotDict
-
 * utils工具函数库
   * cal_angle(start,goal),通过getRobotDict获取的机器人输入函数，获取`start的方向`与`start到goal的方向`之间的夹角，范围\[-pi,pi]
+
+* 路径规划函数D*lite（DStar类中）
+  * pf = DStar(x_start=0, y_start=0, x_goal=5, y_goal=5)  初始化
+  * pf.set_obstract(x,y,r,val)  设置障碍物位置和大小，默认圆形,val表示设置属性，val为-1时设置为障碍物，val为1时设置为可行域
+  * pf.replan()   路径规划 pf.plan 内为当前路径
+  * plan[i].x     plan[i].y 内为第i步位置
+  * pf.update_cell(x,y,r)     设置（x，y）点的属性，r<0视为区域不可行
+  * 不加初始化的路径规划函数仅限于数学空间下， 不限制物理空间对应尺寸,初始化函数为 initialize_map(x,y) 设置地图为x*y的尺寸，并限制地图中心为坐标系原点 
+  * pf.shorter_the_path(e)    路径优化，去掉一些共线点，e为参考误差，一般可设为2
