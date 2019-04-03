@@ -17,19 +17,19 @@ read_addr = (localhost, 23333)
 camera = Camera(read_addr)
 debug = DBG()
 #ser=None
-ser = serial.Serial(serialPort, 115200, timeout=0.5)
+#ser = serial.Serial(serialPort, 115200, timeout=0.5)
 #ser=config_serial(serialPort)
 # 主逻辑
 speed=1
 # 1.初始化要控制的机器人
 blue, yellow = camera.getRobotDict()  # 读取初始信息
 
-ro_b_0 = Robot('blue', 0, 0.15, ser=ser,control_addr=control_addr)
+ro_b_0 = Robot('blue', 0, 0.15, control_addr=control_addr)
 start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
 end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称点
 print(start_point)
 # 2.目前只测试静态避障，所以只生成一次路径规划
-path = statics_map(start_point, end_point, camera)  # 从Dstar获取路径信息
+path = statics_map(start_point, end_point, camera,0.15)  # 从Dstar获取路径信息
 path = path[::10]
 print(path)
 debug.addPath(path)  # 将路径画出来
@@ -55,6 +55,7 @@ while True:
 				start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
 				end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称点
 				path = statics_map(start_point, end_point, camera)  # 从Dstar获取路径信息
+
 				path=path[::10]
 				debug = DBG()
 				debug.addPath(path)

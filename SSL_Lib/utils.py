@@ -2,8 +2,12 @@ import numpy as np
 from SSL_Lib.DStar import DStar
 from SSL_Lib.Camera import Camera
 import serial
+import threading
 import time
 
+def getx(camera):
+	blue,yellow=camera.getRobotDict()
+	return blue[0]
 
 def calc_angle(start, goal):
 	# 起始点的信息
