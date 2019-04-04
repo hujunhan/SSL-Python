@@ -38,6 +38,14 @@ class DBG():
 		debug_msg.line.FORWARD = False
 		debug_msg.line.BACK = False
 
+	def addCircle(self,x,y,radius):
+		list=[]
+		for i in range(12):
+			p=point(x+radius*math.cos(math.pi/6*i),y+radius*math.sin(math.pi/6*i))
+			list.append(p)
+		for i in range(len(list)-1):
+			self.addLine(list[i].x,list[i].y,list[i+1].x,list[i+1].y)
+		self.addLine(list[i+1].x,list[i+1].y,list[0].x,list[0].y)
 
 	def addPath(self, path):
 		for i in range(len(path) - 1):

@@ -36,8 +36,10 @@ ob_temp = []
 for ro in blue.values():
 	if ro.robot_id is not 0:
 		ob_temp.append([ro.x / 1000, ro.y / 1000])
+		debug.addCircle(ro.x/10,ro.y/10,20)
 for ro in yellow.values():
 	ob_temp.append(([ro.x / 1000, ro.y / 1000]))
+	debug.addCircle(ro.x/10,ro.y/10,20)
 ob = np.array(ob_temp)
 print('ob = ', ob)
 u = np.array([0.0, 0.0])
@@ -67,6 +69,7 @@ print('length of path: ', len(path))
 print('length of path(reduced): ', len(path))
 debug.addPath(path)  # 将路径画出来
 debug.sendDebugMessage()  # debug信息发送
+
 i = 0
 speed = 1
 
