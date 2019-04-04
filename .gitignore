@@ -1,2 +1,5 @@
 /.vscode
 /SSL_Lib/__pycache__/
+/.idea
+__pycache__/
+*.py[cod]
