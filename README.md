@@ -71,10 +71,25 @@ pip install numpy
   * cal_angle(start,goal),通过getRobotDict获取的机器人输入函数，获取`start的方向`与`start到goal的方向`之间的夹角，范围\[-pi,pi]
 
 * 路径规划函数D*lite（DStar类中）
-  * pf = DStar(x_start=0, y_start=0, x_goal=5, y_goal=5)  初始化
-  * pf.set_obstract(x,y,r,val)  设置障碍物位置和大小，默认圆形,val表示设置属性，val为-1时设置为障碍物，val为1时设置为可行域
-  * pf.replan()   路径规划 pf.plan 内为当前路径
-  * plan[i].x     plan[i].y 内为第i步位置
-  * pf.update_cell(x,y,r)     设置（x，y）点的属性，r<0视为区域不可行
-  * 不加初始化的路径规划函数仅限于数学空间下， 不限制物理空间对应尺寸,初始化函数为 initialize_map(x,y) 设置地图为x*y的尺寸，并限制地图中心为坐标系原点 
-  * pf.shorter_the_path(e)    路径优化，去掉一些共线点，e为参考误差，一般可设为2
+  ``` python
+   pf = DStar(x_start=0, y_start=0, x_goal=5, y_goal=5)    
+  #1.初始化
+  
+   pf.set_obstract(x,y,r,val)  
+  #2.设置障碍物位置和大小，默认圆形,val为设定值，val=-1为设置为障碍，val=1为设置为可行域
+  
+   pf.replan()   
+  #3.路径规划 pf.plan 内为当前路径
+  
+   plan[i].x     plan[i].y 
+  #4.为第i步位置
+  
+   pf.update_cell(x,y,r)     
+  #5.设置（x，y）点的属性，r<0视为区域不可行
+  
+   initialize_map(x,y) 
+  #6.不加初始化的路径规划函数仅限于数学空间下， 不限制物理空间对应尺寸,初始化函数为 设置地图为x*y的尺寸，并限制地图中心为坐标系原点 
+  
+  pf.shorter_the_path(e)    
+  #7.路径优化算法，去掉直线上的多于点，e为参考误差，一般设为2，无返回值，调用此函数后，使用get_path或pf.path读取路径
+  ``` 
