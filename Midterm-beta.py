@@ -57,7 +57,7 @@ while path is None:  # 如果障碍物膨胀太多，就逐渐减小
 
 goal = np.array([path[0].x / 100.0, path[0].y / 100.0])
 
-path=path[::10] #精简一下路径
+#path=path[::10] #精简一下路径
 
 
 print('get path!')
