@@ -304,7 +304,8 @@ class DStar:
         return True 
     
 
-    def shorter_the_path(self,e):
+    def shorter_the_path(self,e,step):
+        self.path = self.path[::step]
         flag=True
         while flag:
             flag=False 
@@ -319,6 +320,20 @@ class DStar:
                 index=index-2
         return True
 
+    def shorter_the_path2(self,e,step):
+        a=0
+        #self.path = self.path[::step]
+        while a+step<len(self.path): 
+            for i in range(a,a+step-1):
+                del self.path[a+1]
+            dx=(self.path[a+1].x-self.path[a].x)/step
+            dy=(self.path[a+1].y-self.path[a].y)/step
+            index=1
+            while abs(self.path[a+2].x-self.path[a+1].x-dx*index)+abs(self.path[a+2].x-self.path[a+1].x-dy*index)<e\
+                | a+2<len(self.path)-1 :
+                del self.path[a+2]
+                index=index+1
+            a=a+1
         
 
 
