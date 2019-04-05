@@ -40,6 +40,9 @@ class DBG():
 
 	def addCircle(self,x,y,radius):
 		list=[]
+		x=100*x#单位换算
+		y=100*y
+		radius=100*radius
 		for i in range(12):
 			p=point(x+radius*math.cos(math.pi/6*i),y+radius*math.sin(math.pi/6*i))
 			list.append(p)
