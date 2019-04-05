@@ -50,12 +50,12 @@ def statics_map(start_point, end_point, blue,yellow, radius):
 		pf.set_obstract(int(ro.x * 100), int(ro.y * 100), radius * 100,-1)
 
 	pf.replan()
-	pf.shorter_the_path(1)
+	#pf.shorter_the_path2(1,10)
 	path = pf.get_path()
-	for index in range(len(path)-1):
+	for index in range(len(path)):
 		path[index].x=path[index].x/100
 		path[index].y=path[index].y/100
-	return path
+	return pf
 
 
 ##最最简单的路径跟踪
