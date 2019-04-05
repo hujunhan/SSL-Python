@@ -7,28 +7,28 @@ class DStar:
     DIAGONAL_DIST = sqrt(2)
 
     @classmethod
-    def heuristic(cls, a, b):
+    def heuristic(cls, a, b):    ## 启发式因子
         x_diff, y_diff = abs(a.x - b.x), abs(a.y - b.y)
         return (cls.DIAGONAL_DIST - 1) * min(x_diff, y_diff) + max(x_diff, y_diff)
 
     @classmethod
-    def key_hash_code(cls, u):
+    def key_hash_code(cls, u):   # 计算k值
         return u.k.first() + 1193 * u.k.second()
 
     @classmethod
-    def true_dist(cls, a, b):
+    def true_dist(cls, a, b):   # 欧式距离
         return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2))
 
     @classmethod
-    def close(cls, x, y):
+    def close(cls, x, y):      # 判断是否相等
         if x == inf and y == inf:
             return True
         return abs(x - y) < 0.00001
 
-    def get_path(self):
+    def get_path(self):      # 获取计算的路径 
         return self.path
 
-    def cost(self, a, b):
+    def cost(self, a, b):    # 获取相邻点的距离，DIAGONAL_DIST（斜线距离），STRAIGHT_DIST（直线距离）
         x_diff = abs(a.x - b.x)
         y_diff = abs(a.y - b.y)
 
@@ -38,30 +38,30 @@ class DStar:
             return scale * self.cell_hash[a].cost
         return scale
 
-    def get_rhs(self, u):
+    def get_rhs(self, u):  # 后继节点的估计值
         if u == self.s_goal:
             return 0
         if u not in self.cell_hash:
             return self.heuristic(u, self.s_goal)
         return self.cell_hash[u].rhs
 
-    def get_g(self, u):
+    def get_g(self, u):   # 前继点的估计值
         if u not in self.cell_hash.keys():
             return self.heuristic(u, self.s_goal)
         return self.cell_hash[u].g
 
-    def calculate_key(self, u):
+    def calculate_key(self, u):   # 计算key值
         val = min(self.get_rhs(u), self.get_g(u))
         return State(u.x, u.y, Pair(val + self.heuristic(u, self.s_start) + self.k_m, val))
 
-    def make_new_cell(self, u):
+    def make_new_cell(self, u):   # 创建新的一个结点
         if u in self.cell_hash.keys():
             return
         dist = self.heuristic(u, self.s_goal)
         tmp = CellInfo(dist, dist, self.STRAIGHT_DIST)
         self.cell_hash[u] = tmp
 
-    def clear_fields(self):
+    def clear_fields(self):   #清除存储的地图数据
         self.cell_hash = {}
         self.open_hash = {}
         self.open_list = Queue()
@@ -82,11 +82,11 @@ class DStar:
 
         self.clear_fields()
 
-    def set_g(self, u, g):
+    def set_g(self, u, g):  # 设置g
         self.make_new_cell(u)
         self.cell_hash[u].g = g
 
-    def set_rhs(self, u, rhs):
+    def set_rhs(self, u, rhs):  # 设置rhs
         self.make_new_cell(u)
         self.cell_hash[u].rhs = rhs
 
@@ -97,12 +97,12 @@ class DStar:
             return False
         return True
 
-    def occupied(self, u):
+    def occupied(self, u):   # 是否被不可行
         if u not in self.cell_hash:
             return False
         return self.cell_hash[u].cost < 0
 
-    def get_predecessors(self, u):
+    def get_predecessors(self, u):   # 前继节点遍历
         s = []
 
         tmp = State(u.x + 1, u.y, Pair(-1, -1))
@@ -132,7 +132,7 @@ class DStar:
 
         return s
 
-    def get_successors(self, u):
+    def get_successors(self, u):  # 后继节点遍历
         s = []
         
         if self.occupied(u):
@@ -150,14 +150,14 @@ class DStar:
         return s
 
 
-    def update_start(self, x, y):
+    def update_start(self, x, y): #更新起点
         self.s_start.x = x
         self.s_start.y = y
         self.k_m += self.heuristic(self.s_last, self.s_start)
         self.s_start = self.calculate_key(self.s_start)
         self.s_last = self.s_start
 
-    def update_goal(self, x, y):
+    def update_goal(self, x, y):  # 更新终点
         to_add = []
         for state in self.cell_hash:
             if not self.close(self.cell_hash[state], self.STRAIGHT_DIST):
@@ -170,14 +170,14 @@ class DStar:
 
         for p in to_add:
             self.update_cell(p.first().x, p.first().y, p.second())
-
-    def insert(self, u):
+ 
+    def insert(self, u):    #设置u点的各个值
         u = self.calculate_key(u)
         csum = self.key_hash_code(u)
         self.open_hash[u] = csum
         self.open_list.put(u)
 
-    def update_vertex(self, u):
+    def update_vertex(self, u):   # 设置顶点（rhs，g的值）
         if u != self.s_goal:
             s = self.get_successors(u)
             tmp = inf
@@ -191,7 +191,7 @@ class DStar:
         if not self.close(self.get_g(u), self.get_rhs(u)):
             self.insert(u)
 
-    def update_cell(self, x, y, val):
+    def update_cell(self, x, y, val): # 更新地图单元
         u = State(x, y, Pair(0, 0))
 
         if u == self.s_start or u == self.s_goal:
@@ -201,7 +201,7 @@ class DStar:
         self.cell_hash[u].cost = val
         self.update_vertex(u)
 
-    def compute_shortest_path(self):
+    def compute_shortest_path(self): # 反向传播计算地图估计值
         if self.open_list.empty():
             return 1
 
@@ -241,24 +241,21 @@ class DStar:
             self.s_start = self.calculate_key(self.s_start)
         return 0
 
-    def replan(self):
+    def replan(self):  # 路劲规划主函数
         self.path = []
-        if self.compute_shortest_path() < 0:
-            print("no path")
+        if self.compute_shortest_path() < 0: # 反向传播计算地图估计值
+            print("no path") 
             return False
 
         cur = self.s_start
-        if self.get_g(self.s_start) == inf:
+        if self.get_g(self.s_start) == inf: #是否存在可行路径
             print("g==inf")
             return False
-        
-        #flag=False
 
-        while cur != self.s_goal:
+        while cur != self.s_goal:  #逐步循环
             self.path.append(cur)
             n = self.get_successors(cur)
-            self.update_cell(cur.x,cur.y,100)
-            #print(cur)
+            self.update_cell(cur.x,cur.y,100) # 设置单次路径规划不允许走回头路
 
             if len(n) == 0:
                 print("n=0")
@@ -266,19 +263,13 @@ class DStar:
 
             cmin = inf
             tmin = 0
-            #smin = []
-            #if abs(cur.x-self.s_start.x)<20: 
-            #    flag=True
-            #if flag:
-            #    print("here's the n from",cur)
-            for i in n:
+
+            for i in n: # 对所用邻域的点，寻找最小估计值的点
                 val = self.cost(cur, i)
                 val2 = self.true_dist(i, self.s_goal) + self.true_dist(self.s_start, i)
                 val += self.get_rhs(i)
                 if  i in self.cell_hash and self.cell_hash[i].cost < 0:
                     continue
-                #if flag:
-                #    print(i,"val=",val)
 
                 if self.close(val, cmin) and tmin > val2 or val < cmin:
                     tmin = val2
@@ -286,11 +277,10 @@ class DStar:
                     smin = i
 
             cur = State(smin.x, smin.y, smin.k)
-            #if flag:
-            #    print("deceide to",cur)
-            #    print("\n")
-        self.path.append(self.s_goal)
-        
+        self.path.append(self.s_goal) # 添加到路径
+        for i in self.cell_hash.keys(): # 删除单次路径规划中的设置
+            if self.cell_hash[i].cost==100:
+                self.cell_hash[i].cost=1
 
         return True
 
@@ -314,7 +304,8 @@ class DStar:
         return True 
     
 
-    def shorter_the_path(self,e):
+    def shorter_the_path(self,e,step):
+        self.path = self.path[::step]
         flag=True
         while flag:
             flag=False 
@@ -329,6 +320,20 @@ class DStar:
                 index=index-2
         return True
 
+    def shorter_the_path2(self,e,step):
+        a=0
+        #self.path = self.path[::step]
+        while a+step<len(self.path): 
+            for i in range(a,a+step-1):
+                del self.path[a+1]
+            dx=(self.path[a+1].x-self.path[a].x)/step
+            dy=(self.path[a+1].y-self.path[a].y)/step
+            index=1
+            while abs(self.path[a+2].x-self.path[a+1].x-dx*index)+abs(self.path[a+2].x-self.path[a+1].x-dy*index)<e\
+                | a+2<len(self.path)-1 :
+                del self.path[a+2]
+                index=index+1
+            a=a+1
         
 
 
