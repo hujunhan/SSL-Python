@@ -57,8 +57,7 @@ while path is None:  # 如果障碍物膨胀太多，就逐渐减小
 
 goal = np.array([path[0].x / 100.0, path[0].y / 100.0])
 
-path=path[::10] #精简一下路径
-
+path = path[::2]  # 精简一下路径
 
 print('get path!')
 print('path start at: ', path[0])
@@ -71,18 +70,51 @@ i = 0
 speed = 1
 
 
+def updatePath():
+	radius = 4
+	global path
+	global blue, yellow
+	while True:
+		print('update path!')
+		pf = DStar(int(blue[0].x / 10), int(blue[0].y / 10), 900, 0)
+		pf.initialize_map(1200, 900)
+		for ro in blue.values():
+			if ro.robot_id is not 0:
+				rx = int(ro.x)
+				ry = int(ro.y)
+				if np.hypot(blue[0].x - rx, blue[0].y - ry) < 2000:
+					pf.set_obstract(int(ro.x / 10), int(ro.y / 10), radius, -1)
+		for ro in yellow.values():
+			rx = int(ro.x)
+			ry = int(ro.y)
+			print(np.hypot(blue[0].x - rx, blue[0].y - ry))
+			if np.hypot(blue[0].x - rx, blue[0].y - ry) < 2000:
+				pf.set_obstract(int(ro.x / 10), int(ro.y / 10), radius, -1)
+		pf.replan()
+		pf.shorter_the_path(2)
+		path = pf.get_path()
+
+
+thread2 = threading.Thread(target=updatePath)
+
 # 3. 新建一个进程
 # 用来另开一个线程的函数
 def getblue0():
-	global blue
+	global blue, yellow
 	while True:
-		x, y = camera.getRobotDict()
-		blue[0] = x[0]
+		# print('update robot info!')
+		# thread2.join()
+		blue, yellow = camera.getRobotDict()
 
 
+thread2.start()
 thread1 = threading.Thread(target=getblue0)
 thread1.start()
 
+
+
+
+k = 1
 # 4. 主循环
 while True:
 	# 4.1 根据DWA计算所应该施加的控制指令
@@ -90,9 +122,13 @@ while True:
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
 	ro_b_0.setSpeed(u[1], u[0], 0)
 	x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, blue[0].vel_x / 1000, blue[0].vel_y / 1000])
-	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
 		print("Goal!!")
 		i = i + 1
 		goal = np.array([path[i].x / 100.0, path[i].y / 100.0])
-	#time.sleep(0.015)
+	debug = DBG()
+	debug.addPath(path)  # 将路径画出来
+	debug.addpath_dwa(ltraj)
+	debug.sendDebugMessage()  # debug信息发送
+# time.sleep(0.015)
 # chase2(blue[0],[path_x,path_y],ro_b_0,1,1)

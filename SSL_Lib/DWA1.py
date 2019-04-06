@@ -22,16 +22,16 @@ class Config():
 
 	def __init__(self):
 		# robot parameter
-		self.max_speed = 2.0  # [m/s]
-		self.min_speed = -2.0  # [m/s]
+		self.max_speed = 4.0  # [m/s]
+		self.min_speed = -4.0  # [m/s]
 		self.max_yawrate = 40.0 * math.pi / 180.0  # [rad/s]
-		self.max_accel = 0.2  # [m/ss]
+		self.max_accel = 0.5  # [m/ss]
 		self.max_dyawrate = 40.0 * math.pi / 180.0  # [rad/ss]
 		self.v_reso = 0.01  # [m/s]
 		self.yawrate_reso = 0.1 * math.pi / 180.0  # [rad/s]
 		self.dt = 0.1  # [s]
 		self.predict_time = 3  # [s]
-		self.to_goal_cost_gain = 1.0
+		self.to_goal_cost_gain = 10.0
 		self.speed_cost_gain = 1.0
 		self.robot_radius = 0.15  # [m]
 
@@ -221,7 +221,7 @@ def main(gx=10, gy=10):
 			plt.pause(0.0001)
 
 		# check goal
-		if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+		if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
 			print("Goal!!")
 			break
 

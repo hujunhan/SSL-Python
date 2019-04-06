@@ -6,7 +6,7 @@ from SSL_Lib import vision_detection_pb2
 from SSL_Lib.Robot import *
 from SSL_Lib.Camera import *
 from SSL_Lib.P2P import *
-from SSL_Lib.DWA import *
+from SSL_Lib.DWA1 import *
 from SSL_Lib.DStar import *
 from SSL_Lib.DBG import DBG
 import matplotlib.pyplot as plt
@@ -60,7 +60,7 @@ while True:
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
 	ro_b_0.setSpeed(u[1], u[0], 0)
 	x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, blue[0].vel_x / 1000, blue[0].vel_y / 1000])
-	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
 		print("Goal!!")
 		break
 	if show_animation:
