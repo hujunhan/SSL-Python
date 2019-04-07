@@ -35,37 +35,44 @@ print('goal at: ', end_point)
 ob_temp = []
 for ro in blue.values():
 	if ro.robot_id is not 0:
-		ob_temp.append([ro.x / 1000, ro.y / 1000])
+		ob_temp.append([ro.x, ro.y])
+		# debug.addCircle(ro.x/10,ro.y/10,20)
 for ro in yellow.values():
-	ob_temp.append(([ro.x / 1000, ro.y / 1000]))
+	ob_temp.append(([ro.x, ro.y]))
+	# debug.addCircle(ro.x/10,ro.y/10,20)
 ob = np.array(ob_temp)
 print('ob = ', ob)
 u = np.array([0.0, 0.0])
 config = Config()
 # 2.1 新建地图
-radius = 20
-path = statics_map(start_point, end_point, blue, yellow, radius)  # 从Dstar获取路径信息
-x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, 0.0, 0.0])
+radius = 0.2
+pf = statics_map(start_point, end_point, blue, yellow, radius)  # 从Dstar获取路径信息
+pf.shorter_the_path(2,10)
+path=pf.get_path()
+x = np.array([blue[0].x, blue[0].y, blue[0].orientation, 0.0, 0.0])
 traj = np.array(x)
 while path is None:  # 如果障碍物膨胀太多，就逐渐减小
-	radius = radius - 1
-	if radius < 5:
+	radius = radius - 0.01
+	if radius < 0.05:
 		print('No way out!')
 		break
 	print('Now trying radius = ', radius)
-	path = statics_map(start_point, end_point, blue, yellow, radius)
+	pf = statics_map(start_point, end_point, blue, yellow, radius)
+	path=pf.get_path()
 
-goal = np.array([path[0].x / 100.0, path[0].y / 100.0])
+goal = np.array([path[0].x , path[0].y])
 
-path = path[::2]  # 精简一下路径
+#path=path[::10] #精简一下路径
+
 
 print('get path!')
 print('path start at: ', path[0])
 print('path end at: ', path[-1])
 print('length of path: ', len(path))
 print('length of path(reduced): ', len(path))
-debug.addPath(path)  # 将路径画出来
+debug.addPath(path,4)  # 将路径画出来
 debug.sendDebugMessage()  # debug信息发送
+
 i = 0
 speed = 1
 
@@ -119,7 +126,7 @@ while True:
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
 	print(u)
 	ro_b_0.setSpeed(u[1], u[0], 0)
-	x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, u[0], u[1]])
+	x = np.array([blue[0].x, blue[0].y, blue[0].orientation, u[0], u[1]])
 	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
 		# print("Goal!!")
 
@@ -137,9 +144,9 @@ while True:
 			else:
 				continue
 		i = i + k
-		goal = np.array([path[i].x / 100.0, path[i].y / 100.0])
+		goal = np.array([path[i].x , path[i].y ])
 	debug = DBG()
-	debug.addPath(path)  # 将路径画出来
+	debug.addPath(path,4)  # 将路径画出来
 	debug.addpath_dwa(ltraj)
 	debug.sendDebugMessage()  # debug信息发送
 # time.sleep(0.015)

@@ -27,10 +27,12 @@ class DBG():
 		pos.y = y
 		text_msg.text = text
 
-	def addLine(self, sx, sy, ex, ey):
+	def addLine(self, sx, sy, ex, ey, color):
+		sx,sy,ex,ey=sx*100,sy*100,ex*100,ey*100
 		debug_msg = self.debug_pack.msgs.add()
 		debug_msg.type = zss_debug_pb2.Debug_Msg.LINE
-		debug_msg.color = zss_debug_pb2.Debug_Msg.GREEN
+		debug_msg.color = color
+		#debug_msg.color = zss_debug_pb2.Debug_Msg.GREEN
 		debug_msg.line.start.x = sx
 		debug_msg.line.start.y = -sy
 		debug_msg.line.end.x = ex
@@ -38,10 +40,24 @@ class DBG():
 		debug_msg.line.FORWARD = False
 		debug_msg.line.BACK = False
 
+	def addCircle(self,x,y,radius):
+		list=[]
+		radius=radius
+		for i in range(12):
+			p=point(x+radius*math.cos(math.pi/6*i),y+radius*math.sin(math.pi/6*i))
+			list.append(p)
+		for i in range(len(list)-1):
+			self.addLine(list[i].x,list[i].y,list[i+1].x,list[i+1].y,3)
+		self.addLine(list[i+1].x,list[i+1].y,list[0].x,list[0].y,3)
 
-	def addPath(self, path):
+	def addPath(self, path,color):
 		for i in range(len(path) - 1):
-			self.addLine(path[i].x , path[i].y , path[i + 1].x , path[i + 1].y )
+			self.addLine(path[i].x , path[i].y , path[i + 1].x , path[i + 1].y, color )
 	def addpath_dwa(self,path):
 		for i in range(len(path)-1):
-			self.addLine(path[i][0]*100,path[i][1]*100,path[i+1][0]*100,path[i+1][1]*100)
+			self.addLine(path[i][0]*100,path[i][1]*100,path[i+1][0]*100,path[i+1][1]*100,4)
+
+class point:
+	def __init__(self,x,y):
+		self.x = x
+		self.y = y

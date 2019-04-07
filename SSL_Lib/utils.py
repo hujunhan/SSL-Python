@@ -37,22 +37,25 @@ def calc_distance(start, goal):
 
 # 地图大小5mx3.6m
 def statics_map(start_point, end_point, blue,yellow, radius):
-	x_start = int(start_point[0] / 10)
-	y_start = int(start_point[1] / 10)
-	x_goal = int(end_point[0] / 10)
-	y_goal = int(end_point[1] / 10)
+	x_start = int(start_point[0] *100)
+	y_start = int(start_point[1] *100)
+	x_goal = int(end_point[0] *100)
+	y_goal = int(end_point[1] *100)
 	pf = DStar(x_start, y_start, x_goal, y_goal)  # 初始化
 	pf.initialize_map(1200, 900)
 	for ro in blue.values():
 		if ro.robot_id is not 0:
-			pf.set_obstract(int(ro.x / 10), int(ro.y / 10), radius,-1)
+			pf.set_obstract(int(ro.x * 100), int(ro.y * 100), radius * 100,-1)
 	for ro in yellow.values():
-		pf.set_obstract(int(ro.x / 10), int(ro.y / 10), radius,-1)
+		pf.set_obstract(int(ro.x * 100), int(ro.y * 100), radius * 100,-1)
 
 	pf.replan()
-	pf.shorter_the_path(2)
+	#pf.shorter_the_path2(1,10)
 	path = pf.get_path()
-	return path
+	for index in range(len(path)):
+		path[index].x=path[index].x/100
+		path[index].y=path[index].y/100
+	return pf
 
 
 ##最最简单的路径跟踪
