@@ -97,6 +97,7 @@ def updatePath():
 
 thread2 = threading.Thread(target=updatePath)
 
+
 # 3. 新建一个进程
 # 用来另开一个线程的函数
 def getblue0():
@@ -107,12 +108,8 @@ def getblue0():
 		blue, yellow = camera.getRobotDict()
 
 
-thread2.start()
 thread1 = threading.Thread(target=getblue0)
 thread1.start()
-
-
-
 
 k = 1
 # 4. 主循环
@@ -120,11 +117,26 @@ while True:
 	# 4.1 根据DWA计算所应该施加的控制指令
 	# u[0]是机器人x轴速度，u[1]是机器人y轴速度
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
+	print(u)
 	ro_b_0.setSpeed(u[1], u[0], 0)
-	x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, blue[0].vel_x / 1000, blue[0].vel_y / 1000])
+	x = np.array([blue[0].x / 1000, blue[0].y / 1000, blue[0].orientation, u[0], u[1]])
 	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
-		print("Goal!!")
-		i = i + 1
+		# print("Goal!!")
+
+		if i == len(path)-1:
+			if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+				i = len(path) - 2
+				k = -1
+			else:
+				continue
+
+		if i == 0:
+			if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+				i = 0
+				k = 1
+			else:
+				continue
+		i = i + k
 		goal = np.array([path[i].x / 100.0, path[i].y / 100.0])
 	debug = DBG()
 	debug.addPath(path)  # 将路径画出来
