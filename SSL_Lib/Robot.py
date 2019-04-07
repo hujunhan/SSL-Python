@@ -57,7 +57,6 @@ class Robot:
 		rc.spinner = False
 		rc.wheelsspeed = False
 		self.sendCommand()  # 发送指令
-
 		try:
 			commands = b'\xff'
 			commands += b'\x00'
@@ -109,8 +108,10 @@ class Robot:
 				commands += b'\x00'
 			if self.ser is not None:
 				self.ser.write(commands)
+				self.sendCommand()  # 发送指令
 		except:
 			pass
+		self.sendCommand()  # 发送指令
 		return 'commands sent!'
 
 	def getVelBitarr(self, v):

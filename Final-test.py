@@ -10,40 +10,42 @@ import serial
 import sys
 import time
 
-serialPort = "COM4"  # 串口
+serialPort = "COM5"  # 串口
 # 初始化控制和读取的IP地址、端口号
 localhost = '127.0.0.1'
 control_addr = (localhost, 20011)
 read_addr = (localhost, 23333)
 camera = Camera(read_addr)
 debug = DBG()
-# ser=None
-# ser = serial.Serial(serialPort, 115200, timeout=0.5)
-# ser=config_serial(serialPort)
+ser=None
+#ser = serial.Serial(serialPort, 115200, timeout=0.5)
+#ser=config_serial(serialPort)
 # 主逻辑
-
-
+id=0
 # 1.初始化要控制的机器人
-ro_b_0 = Robot('blue', 0, 0.15, control_addr=control_addr)
+ro_b_0 = Robot('blue', 0, 0.15, control_addr=control_addr,ser=ser)
+#while(1):
+#	ro_b_0.setSpeed(0,0,1)
 blue, yellow = camera.getRobotDict()  # 读取初始信息(已换算)
-start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置(已换算，单位是m)
+start_point = [blue[id].x, blue[id].y]  # 设置机器人开始的位置(已换算，单位是m)
 end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称点(已换算，单位是m)
 print('start at: ', start_point)
 print('goal at: ', end_point)
-
+print("success")
+#ro_b_0.setSpeed(0,1,0)
 # 2.目前只测试静态避障，所以只生成一次路径规划
 ob_temp = []
 for ro in blue.values():
 	if ro.robot_id is not 0:
 		ob_temp.append([ro.x, ro.y])
 		#print(ro.x)
-		debug.addCircle(ro.x, ro.y,0.2)
+		#debug.addCircle(ro.x, ro.y,0.2)
 for ro in yellow.values():
 	ob_temp.append(([ro.x, ro.y ]))
-	debug.addCircle(ro.x, ro.y, 0.2)
+	#debug.addCircle(ro.x, ro.y, 0.2)
 ob = np.array(ob_temp)
 print('ob = ', ob)
-u = np.array([0.0, 0.0])
+u = np.array([0, 0])
 config = Config()
 
 
@@ -51,7 +53,7 @@ config = Config()
 radius = 0.2
 pf = statics_map(start_point, end_point, blue, yellow, radius)
 path=pf.get_path()  # 从Dstar获取路径信息
-x = np.array([blue[0].x , blue[0].y , blue[0].orientation, 0.0, 0.0])
+x = np.array([blue[id].x , blue[id].y , blue[id].orientation, 0.0, 0.0])
 traj = np.array(x)
 while path is None:  # 如果障碍物膨胀太多，就逐渐减小
 	radius = radius - 0.01
@@ -64,7 +66,7 @@ while path is None:  # 如果障碍物膨胀太多，就逐渐减小
 
 goal = np.array([path[0].x , path[0].y ])
 print(goal)
-debug.addPath(path,4)  # 将路径画出来
+#debug.addPath(path,4)  # 将路径画出来
 
 #path=path[::10] #精简一下路径
 
@@ -73,14 +75,12 @@ print('get path!')
 print('path start at: ', path[0])
 print('path end at: ', path[-1])
 print('length of path: ', len(path))
-pf.shorter_the_path(2,10)
+pf.shorter_the_path(1,5)
 path=pf.get_path()	
 debug.addPath(path,5)
 print('length of path(reduced): ', len(path))
-debug.sendDebugMessage()  # debug信息发送
+#debug.sendDebugMessage()  # debug信息发送
 #print(path)
-while(1):
-	1
 i = 0
 speed = 1
 
@@ -100,12 +100,24 @@ thread1.start()
 while True:
 	# 4.1 根据DWA计算所应该施加的控制指令
 	# u[0]是机器人x轴速度，u[1]是机器人y轴速度
+	camera.update_state()
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
+
 	ro_b_0.setSpeed(u[1], u[0], 0)
-	x = np.array([blue[0].x , blue[0].y , blue[0].orientation, blue[0].vel_x , blue[0].vel_y ])
-	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+	print(u)
+	print(blue[0])
+	x = np.array([blue[id].x , blue[id].y , blue[id].orientation, u[0] , u[1] ])
+	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <=  1:
 		print("Goal!!")
 		i = i + 1
+		#if i is len(path):
+		#	ro_b_0.setSpeed(0,0,0)
+		#	break
 		goal = np.array([path[i].x , path[i].y ])
-	#time.sleep(0.015)
+	debug=DBG()
+	debug.addPath(path,5)
+	debug.addpath_dwa(ltraj)
+	debug.sendDebugMessage()
+print("success")
+	
 # chase2(blue[0],[path_x,path_y],ro_b_0,1,1)

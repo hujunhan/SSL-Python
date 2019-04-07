@@ -25,12 +25,12 @@ class Config():
 		self.max_speed = 2.0  # [m/s]
 		self.min_speed = -2.0  # [m/s]
 		self.max_yawrate = 360.0 * math.pi / 180.0  # [rad/s]
-		self.max_accel = 0.2  # [m/ss]
+		self.max_accel = 0.8  # [m/ss]
 		self.max_dyawrate = 40.0 * math.pi / 180.0  # [rad/ss]
-		self.v_reso = 0.02  # [m/s]
+		self.v_reso = 2  # [m/s]
 		self.yawrate_reso = 30 * math.pi / 180.0  # [rad/s]
 		self.dt = 0.1  # [s]
-		self.predict_time = 1  # [s]
+		self.predict_time = 0.1  # [s]
 		self.to_goal_cost_gain = 10.0
 		self.speed_cost_gain = 1.0
 		self.robot_radius = 0.3  # [m]
