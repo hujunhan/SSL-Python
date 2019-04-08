@@ -26,11 +26,6 @@ def random_robot(robot):
         ro.setSpeed(0, 1, random.random())
 
 
-ob0 = Robot("blue", 0, 0.15, control_addr)
-ob2 = Robot("blue", 2, 0.15, control_addr)
-ob3 = Robot("blue", 3, 0.15, control_addr)
-goal = Robot("blue", 1, 0.15, control_addr)
-obstacle = [ob0, ob2, ob3]
 camera = Camera(read_addr)
 while True:
     blue, yellow = camera.getRobotDict()
