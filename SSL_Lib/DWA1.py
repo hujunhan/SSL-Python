@@ -31,7 +31,7 @@ class Config():
 		self.yawrate_reso = 0.1 * math.pi / 180.0  # [rad/s]
 		self.dt = 0.1  # [s]
 		self.predict_time = 3  # [s]
-		self.to_goal_cost_gain = 2.0
+		self.to_goal_cost_gain = 1.0
 		self.speed_cost_gain = 1.0
 		self.robot_radius = 0.15  # [m]
 

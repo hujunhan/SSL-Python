@@ -10,6 +10,7 @@ import serial
 import sys
 import time
 from SSL_Lib.RRT import *
+
 serialPort = "COM4"  # 串口
 # 初始化控制和读取的IP地址、端口号
 localhost = '127.0.0.1'
@@ -24,10 +25,10 @@ debug = DBG()
 
 
 # 1.初始化要控制的机器人
-ro_b_0 = Robot('blue', 0, 0.15, control_addr=control_addr)
+ro_b_0 = Robot('yellow', 0, 0.15, control_addr=control_addr)
 
 blue, yellow = camera.getRobotDict()  # 读取初始信息
-start_point = [blue[0].x, blue[0].y]  # 设置机器人开始的位置
+start_point = [yellow[0].x, yellow[0].y]  # 设置机器人开始的位置
 end_point = [-start_point[0], -start_point[1]]  # 设置机器人终点为对称点
 print('start at: ', start_point)
 print('goal at: ', end_point)
@@ -35,23 +36,23 @@ print('goal at: ', end_point)
 # 2.目前只测试静态避障，所以只生成一次路径规划
 ob_temp = []
 for ro in blue.values():
-	if ro.robot_id is not 0:
-		ob_temp.append((ro.x, ro.y,0.3))
-	# debug.addCircle(ro.x/10,ro.y/10,20)
+	ob_temp.append((ro.x, ro.y, 0.3))
+# debug.addCircle(ro.x/10,ro.y/10,20)
 for ro in yellow.values():
-	ob_temp.append((ro.x, ro.y,0.3))
+	if ro.robot_id is not 0:
+		ob_temp.append((ro.x, ro.y, 0.3))
 # debug.addCircle(ro.x/10,ro.y/10,20)
 ob = np.array(ob_temp)
 print('ob = ', ob_temp)
 u = np.array([0.0, 0.0])
 config = Config()
 # 2.1 新建地图
-rrt = RRT(start=[blue[0].x, blue[0].y], goal=[-blue[0].x, -blue[0].y],
-              randArea=[-4, 4], obstacleList=ob_temp)
+rrt = RRT(start=[yellow[0].x, yellow[0].y], goal=[-yellow[0].x, -yellow[0].y],
+		  randArea=[-4, 4], obstacleList=ob_temp)
 path = rrt.Planning(animation=False)
 maxIter = 1000
 path = PathSmoothing(path, maxIter, ob_temp)
-x = np.array([blue[0].x, blue[0].y, blue[0].orientation, 0.0, 0.0])
+x = np.array([yellow[0].x, yellow[0].y, yellow[0].orientation, 0.0, 0.0])
 traj = np.array(x)
 # while path is None:  # 如果障碍物膨胀太多，就逐渐减小
 # 	radius = radius - 0.01
@@ -72,8 +73,8 @@ print('path start at: ', path[0])
 print('path end at: ', path[-1])
 print('length of path: ', len(path))
 print('length of path(reduced): ', len(path))
-debug.addPath_rrt(path, 4)  # 将路径画出来
-debug.sendDebugMessage()  # debug信息发送
+# debug.addPath_rrt(path, 4)  # 将路径画出来
+# debug.sendDebugMessage()  # debug信息发送
 
 i = 0
 speed = 1
@@ -89,11 +90,11 @@ def getblue0():
 		blue, yellow = camera.getRobotDict()
 		ob_temp1 = []
 		for ro in blue.values():
-			if ro.robot_id is not 0:
-				ob_temp1.append([ro.x, ro.y])
+			ob_temp1.append([ro.x, ro.y])
 		# debug.addCircle(ro.x/10,ro.y/10,20)
 		for ro in yellow.values():
-			ob_temp1.append(([ro.x, ro.y]))
+			if ro.robot_id is not 0:
+				ob_temp1.append(([ro.x, ro.y]))
 		# debug.addCircle(ro.x/10,ro.y/10,20)
 		ob = np.array(ob_temp1)
 
@@ -110,38 +111,24 @@ while True:
 	u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
 	# print(u)
 	# if np.hypot(traj[-1,0]-traj[0,0],traj[-1,1]-traj[0,1]) <0.1:
-	# 	pf = statics_map([blue[0].x, blue[0].y], end_point, blue, yellow, radius)
+	# 	pf = statics_map([yellow[0].x, yellow[0].y], end_point, blue, yellow, radius)
 	# 	pf.shorter_the_path(2, 10)
 	# 	path = pf.get_path()
 	ro_b_0.setSpeed(u[1], u[0], 0)
-	x = np.array([blue[0].x, blue[0].y, blue[0].orientation, u[0], u[1]])
-	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
-		# print("Goal!!")
-
-		if i == len(path) - 1:
-			print('point at goal')
-			if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
-				i = len(path) - 1
-				k = -1
-			else:
-				continue
-
+	x = np.array([yellow[0].x, yellow[0].y, yellow[0].orientation, u[0], u[1]])
+	if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 0.5:
 		if i == 0:
-			print('point at start')
-			if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
-				i = 0
-				k = 1
-			else:
-				continue
-		i = i + k
+			i = -1
+		else:
+			i = 0
 		goal = np.array([path[i][0], path[i][1]])
 
 	# if (np.hypot(ltraj[-1][0] - ltraj[0][0], ltraj[-1][1] - ltraj[0][1])) <0.1:
 	# 	if i > 1 or i < len(path)-2:
 	# 		config.to_goal_cost_gain+=1
-	debug = DBG()
-	debug.addPath_rrt(path, 4)  # 将路径画出来
-	debug.addpath_dwa(ltraj)
-	debug.sendDebugMessage()  # debug信息发送
+	# debug = DBG()
+	# debug.addPath_rrt(path, 4)  # 将路径画出来
+	# debug.addpath_dwa(ltraj)
+	# debug.sendDebugMessage()  # debug信息发送
 # time.sleep(0.015)
-# chase2(blue[0],[path_x,path_y],ro_b_0,1,1)
+# chase2(yellow[0],[path_x,path_y],ro_b_0,1,1)
