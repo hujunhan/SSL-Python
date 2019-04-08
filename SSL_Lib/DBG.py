@@ -53,9 +53,12 @@ class DBG():
 	def addPath(self, path,color):
 		for i in range(len(path) - 1):
 			self.addLine(path[i].x , path[i].y , path[i + 1].x , path[i + 1].y, color )
+	def addPath_rrt(self,path,color):
+		for i in range(len(path)-1):
+			self.addLine(path[i][0],path[i][1],path[i+1][0],path[i+1][1],color)
 	def addpath_dwa(self,path):
 		for i in range(len(path)-1):
-			self.addLine(path[i][0],path[i][1],path[i+1][0],path[i+1][1],4)
+			self.addLine(path[i][0]*1,path[i][1]*1,path[i+1][0]*1,path[i+1][1]*1,4)
 
 class point:
 	def __init__(self,x,y):
