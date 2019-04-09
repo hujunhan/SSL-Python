@@ -201,7 +201,7 @@ def LineCollisionCheck(first, second, obstacleList):
 
     for (ox, oy, size) in obstacleList:
         d = abs(a * ox + b * oy + c) / (math.sqrt(a * a + b * b))
-        if d <= (size):
+        if d <= (2*size):
             return False
 
     #  print("OK")
