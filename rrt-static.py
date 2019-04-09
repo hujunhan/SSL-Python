@@ -47,11 +47,13 @@ print('ob = ', ob_temp)
 u = np.array([0.0, 0.0])
 config = Config()
 # 2.1 新建地图
-rrt = RRT(start=[blue[0].x, blue[0].y], goal=[-blue[0].x, -blue[0].y],
-		  randArea=[-4, 4], obstacleList=ob_temp)
+starttime = time.time()
+rrt = RRT(start=[blue[0].x, blue[0].y], goal=end_point,
+		  randArea=[6, 4], obstacleList=ob)
 path = rrt.Planning(animation=False)
 maxIter = 1000
 path = PathSmoothing(path, maxIter, ob_temp)
+print('Using ', time.time() - starttime, ' to calculate rrt!')
 x = np.array([blue[0].x, blue[0].y, blue[0].orientation, 0.0, 0.0])
 traj = np.array(x)
 # while path is None:  # 如果障碍物膨胀太多，就逐渐减小
@@ -90,13 +92,38 @@ def getblue0():
 		blue, yellow = camera.getRobotDict()
 		ob_temp1 = []
 		for ro in blue.values():
-			ob_temp1.append([ro.x, ro.y])
+			ob_temp1.append([ro.x, ro.y, 0.3])
 		# debug.addCircle(ro.x/10,ro.y/10,20)
 		for ro in yellow.values():
 			if ro.robot_id is not 0:
-				ob_temp1.append(([ro.x, ro.y]))
+				ob_temp1.append(([ro.x, ro.y, 0.3]))
 		# debug.addCircle(ro.x/10,ro.y/10,20)
 		ob = np.array(ob_temp1)
+
+
+def checkDanger():
+	sx = blue[0].x
+	sy = blue[0].y
+	gx = goal[0]
+	gy = goal[1]
+	for ro in ob:
+		if ((ro[0] - sx) * (ro[0] - gx)) < 0:
+			if ((ro[1] - sy) * (ro[1] - gy)) < 0:
+				if checkInLine([sx, sy], [gx, gy], [ro[0], ro[1]], 0.3):
+					return True
+
+
+def checkInLine(a, b, c, r):
+	aa = np.hypot(b[0] - c[0], b[1] - c[1])
+	bb = np.hypot(a[0] - c[0], a[1] - c[1])
+	cc = np.hypot(a[0] - b[0], a[1] - b[1])
+	p = (aa + bb + cc) / 2
+	s = (p * (p - aa) * (p - cc) * (p - bb)) ** 0.5
+	h = 2 * s / cc
+	if h > r:
+		return False
+	else:
+		return True
 
 
 thread1 = threading.Thread(target=getblue0)
@@ -106,6 +133,16 @@ goal = np.array([path[i][0], path[i][1]])
 k = -1
 # 4. 主循环
 while True:
+	if checkDanger():
+		print('danger!')
+		rrt = RRT(start=[blue[0].x, blue[0].y], goal=end_point,
+				  randArea=[6, 4], obstacleList=ob)
+		path = rrt.Planning(animation=False)
+		maxIter = 1000
+		path = PathSmoothing(path, maxIter, ob_temp)
+		i = len(path) - 1
+		goal = np.array([path[i][0], path[i][1]])
+		k = -1
 	# 4.1 根据DWA计算所应该施加的控制指令
 	# u[0]是机器人x轴速度，u[1]是机器人y轴速度
 	angle = togoal(blue[0], goal)
@@ -116,17 +153,18 @@ while True:
 	# 	pf = statics_map([blue[0].x, blue[0].y], end_point, blue, yellow, radius)
 	# 	pf.shorter_the_path(2, 10)
 	# 	path = pf.get_path()
-	distance=math.sqrt((blue[0].x - goal[0]) ** 2 + (blue[0].y - goal[1]) ** 2)
+	distance = math.sqrt((blue[0].x - goal[0]) ** 2 + (blue[0].y - goal[1]) ** 2)
 	if distance <= 1:
-		speed=2*distance
-		if distance <=0.1:
+		speed = 0.2 + 2.3 * distance
+		if distance <= 0.1:
 			if i == 0:
 				k = 1
 			if i == len(path) - 1:
 				k = -1
 			i = i + k
 			goal = np.array([path[i][0], path[i][1]])
-			speed=2
+			speed = 2.5
+
 
 	# if (np.hypot(ltraj[-1][0] - ltraj[0][0], ltraj[-1][1] - ltraj[0][1])) <0.1:
 	# 	if i > 1 or i < len(path)-2:
@@ -135,5 +173,5 @@ while True:
 	debug.addPath_rrt(path, 4)  # 将路径画出来
 	# debug.addpath_dwa(ltraj)
 	debug.sendDebugMessage()  # debug信息发送
-	# time.sleep(0.015)
-	# chase2(blue[0],[path_x,path_y],ro_b_0,1,1)
+# time.sleep(0.015)
+# chase2(blue[0],[path_x,path_y],ro_b_0,1,1)

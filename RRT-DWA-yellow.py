@@ -126,9 +126,9 @@ while True:
 	# if (np.hypot(ltraj[-1][0] - ltraj[0][0], ltraj[-1][1] - ltraj[0][1])) <0.1:
 	# 	if i > 1 or i < len(path)-2:
 	# 		config.to_goal_cost_gain+=1
-	# debug = DBG()
-	# debug.addPath_rrt(path, 4)  # 将路径画出来
-	# debug.addpath_dwa(ltraj)
-	# debug.sendDebugMessage()  # debug信息发送
+	debug = DBG()
+	debug.addPath_rrt(path, 4)  # 将路径画出来
+	debug.addpath_dwa(ltraj)
+	debug.sendDebugMessage()  # debug信息发送
 # time.sleep(0.015)
 # chase2(yellow[0],[path_x,path_y],ro_b_0,1,1)
