@@ -131,9 +131,25 @@ thread1.start()
 i = len(path) - 1
 goal = np.array([path[i][0], path[i][1]])
 k = -1
-GOAL_FLAG=True
+GOAL_FLAG=False
 # 4. 主循环
 while True:
+	if checkDanger():
+		print('danger!')
+		GOAL_FLAG = ~GOAL_FLAG
+		if GOAL_FLAG:
+			xx=end_point
+		else:
+			xx=start_point
+		GOAL_FLAG = ~GOAL_FLAG
+		rrt = RRT(start=[blue[0].x, blue[0].y], goal=xx,
+				  randArea=[6, 4], obstacleList=ob)
+		path = rrt.Planning(animation=False)
+		maxIter = 1000
+		path = PathSmoothing(path, maxIter, ob_temp)
+		i = len(path) - 1
+		goal = np.array([path[i][0], path[i][1]])
+		k = -1
 	# 4.1 根据DWA计算所应该施加的控制指令
 	# u[0]是机器人x轴速度，u[1]是机器人y轴速度
 	angle = togoal(blue[0], goal)
@@ -149,11 +165,17 @@ while True:
 		speed = 0.2 + 2.3 * distance
 		if distance <= 0.1:
 			if i == 0:
-				k = 1
-				GOAL_FLAG=True
-			if i == len(path) - 1:
-				k = -1
-				GOAL_FLAG=False
+				if GOAL_FLAG:
+					xx = end_point
+				else:
+					xx = start_point
+				rrt = RRT(start=[blue[0].x, blue[0].y], goal=xx,
+						  randArea=[6, 4], obstacleList=ob)
+				path = rrt.Planning(animation=False)
+				maxIter = 1000
+				path = PathSmoothing(path, maxIter, ob_temp)
+				i=len(path)-1
+				GOAL_FLAG=~GOAL_FLAG
 			i = i + k
 			goal = np.array([path[i][0], path[i][1]])
 			speed = 2.5

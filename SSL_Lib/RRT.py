@@ -33,6 +33,8 @@ class RRT():
         self.end = Node(goal[0], goal[1])
         self.minrand = randArea[0]
         self.maxrand = randArea[1]
+        self.randx=randArea[0]/2
+        self.randy=randArea[1]/2
         self.expandDis = expandDis
         self.goalSampleRate = goalSampleRate
         self.maxIter = maxIter
@@ -49,8 +51,8 @@ class RRT():
         while True:
             # Random Sampling
             if random.randint(0, 100) > self.goalSampleRate:
-                rnd = [random.uniform(self.minrand, self.maxrand), random.uniform(
-                    self.minrand, self.maxrand)]
+                rnd = [random.uniform(-self.randx, self.randx), random.uniform(
+                    -self.randy, self.randy)]
             else:
                 rnd = [self.end.x, self.end.y]
 

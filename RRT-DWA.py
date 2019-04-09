@@ -62,7 +62,7 @@ traj = np.array(x)
 # 	pf = statics_map(start_point, end_point, blue, yellow, radius)
 # 	path=pf.get_path()
 print(path)
-goal = np.array([path[0][0], path[0][1]])
+goal = np.array([path[-1][0], path[-1][1]])
 
 # path=path[::10] #精简一下路径
 
@@ -75,7 +75,7 @@ print('length of path(reduced): ', len(path))
 debug.addPath_rrt(path, 4)  # 将路径画出来
 debug.sendDebugMessage()  # debug信息发送
 
-i = 0
+i = len(path)-1
 speed = 1
 
 
@@ -101,7 +101,7 @@ def getblue0():
 thread1 = threading.Thread(target=getblue0)
 thread1.start()
 
-k = 1
+k = -1
 # 4. 主循环
 while True:
 	# 4.1 根据DWA计算所应该施加的控制指令
