@@ -25,7 +25,7 @@ class Config():
 		self.max_speed = 2.0  # [m/s]
 		self.min_speed = -2.0  # [m/s]
 		self.max_yawrate = 40.0 * math.pi / 180.0  # [rad/s]
-		self.max_accel = 0.2  # [m/ss]
+		self.max_accel = 0.5  # [m/ss]
 		self.max_dyawrate = 40.0 * math.pi / 180.0  # [rad/ss]
 		self.v_reso = 0.01  # [m/s]
 		self.yawrate_reso = 0.1 * math.pi / 180.0  # [rad/s]
@@ -221,7 +221,7 @@ def main(gx=10, gy=10):
 			plt.pause(0.0001)
 
 		# check goal
-		if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= config.robot_radius:
+		if math.sqrt((x[0] - goal[0]) ** 2 + (x[1] - goal[1]) ** 2) <= 1.0:
 			print("Goal!!")
 			break
 

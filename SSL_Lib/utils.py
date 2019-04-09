@@ -30,6 +30,20 @@ def calc_angle(start, goal):
 		angle = angle + np.pi * 2
 	return angle
 
+def togoal(start,goal):
+	start_x = start.x
+	start_y = start.y
+	start_ori = start.orientation
+	goal_x=goal[0]
+	goal_y=goal[1]
+	vector_angle = np.arctan2(goal_y - start_y, goal_x - start_x)
+	angle = start_ori - vector_angle
+	if (angle > np.pi):
+		angle = angle - np.pi * 2
+	if (angle < -np.pi):
+		angle = angle + np.pi * 2
+	return -angle
+
 
 def calc_distance(start, goal):
 	return np.hypot(goal[1] - start.y / 10, goal[0] - start.x / 10)

@@ -16,6 +16,7 @@ class Robot:
 	control_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 	def __init__(self, color, id, radius, control_addr='127.0.0.1', ser=None):
+		self.control_socket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		self.radius = radius
 		self.start_package = b'\xff\xb0\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x31'  # 实际控制小车的起始包
 		self.config_package = b'\xff\xb0\x04\x05\x06\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x85'
@@ -45,6 +46,8 @@ class Robot:
 		self.ser.write(self.config_package)
 
 	def setSpeed(self, velnormal, veltangent, velangular, command=" "):
+		self.packet = grSim_Packet_pb2.grSim_Packet()  # packet类，由commands和replacements组成
+		self.commands = self.packet.commands
 		self.commands.timestamp = 0
 		self.commands.isteamyellow = self.isteamyellow
 		rc = self.commands.robot_commands.add()
@@ -56,15 +59,15 @@ class Robot:
 		rc.veltangent = veltangent  # 设置箭头方向速度
 		rc.spinner = False
 		rc.wheelsspeed = False
-		self.sendCommand()  # 发送指令
-
+		#self.sendCommand()  # 发送指令
+		self.control_socket.sendto(self.packet.SerializeToString(),self.control_addr)
 		try:
 			commands = b'\xff'
 			commands += b'\x00'
 			commands += b'\x01'
 			commands += b'\x01'
 			vx = int(100 * veltangent)
-			vy = int(100 * velnormal)
+			vy = int(-100 * velnormal)
 			w = int(velangular * 40)
 			sign_vx = 0 if vx >= 0 else 1
 			sign_vy = 0 if vy >= 0 else 1
