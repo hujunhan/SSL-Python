@@ -51,7 +51,7 @@ starttime = time.time()
 rrt = RRT(start=[blue[0].x, blue[0].y], goal=end_point,
 		  randArea=[6, 4], obstacleList=ob)
 path = rrt.Planning(animation=False)
-maxIter = 1000
+maxIter = 4000
 path = PathSmoothing(path, maxIter, ob_temp)
 print('Using ', time.time() - starttime, ' to calculate rrt!')
 x = np.array([blue[0].x, blue[0].y, blue[0].orientation, 0.0, 0.0])
@@ -145,7 +145,7 @@ while True:
 		rrt = RRT(start=[blue[0].x, blue[0].y], goal=xx,
 				  randArea=[6, 4], obstacleList=ob)
 		path = rrt.Planning(animation=False)
-		maxIter = 1000
+		maxIter = 4000
 		path = PathSmoothing(path, maxIter, ob_temp)
 		i = len(path) - 1
 		goal = np.array([path[i][0], path[i][1]])
