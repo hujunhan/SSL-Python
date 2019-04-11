@@ -77,9 +77,9 @@ def getblue0():
 	while True:
 		blue, yellow = camera.getRobotDict()
 		ob_temp1 = []
-		for ro in yellow.values():
-			ob_temp1.append([ro.x, ro.y, radius])
 		for ro in blue.values():
+			ob_temp1.append([ro.x, ro.y, radius])
+		for ro in yellow.values():
 			if ro.robot_id is not 0:
 				ob_temp1.append(([ro.x, ro.y, radius]))
 		ob = np.array(ob_temp1)
