@@ -4,7 +4,17 @@ from SSL_Lib.Camera import Camera
 import serial
 import threading
 import time
-
+def checkInLine(a, b, c, r):
+	aa = np.hypot(b[0] - c[0], b[1] - c[1])
+	bb = np.hypot(a[0] - c[0], a[1] - c[1])
+	cc = np.hypot(a[0] - b[0], a[1] - b[1])
+	p = (aa + bb + cc) / 2
+	s = (p * (p - aa) * (p - cc) * (p - bb)) ** 0.5
+	h = 2 * s / cc
+	if h > r:
+		return False
+	else:
+		return True
 def getx(camera):
 	blue,yellow=camera.getRobotDict()
 	return blue[0]

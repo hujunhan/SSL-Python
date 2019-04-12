@@ -131,40 +131,27 @@ thread1.start()
 i = len(path) - 1
 goal = np.array([path[i][0], path[i][1]])
 k = -1
-GOAL_FLAG=True
+GOAL_FLAG = True
 # 4. 主循环
 while True:
-	# 4.1 根据DWA计算所应该施加的控制指令
-	# u[0]是机器人x轴速度，u[1]是机器人y轴速度
+
 	angle = togoal(blue[0], goal)
 	ro_b_0.setSpeed(speed * np.sin(angle), speed * np.cos(angle), 0)
-	# u, ltraj = dwa_control(x, u, config, goal, ob, ro_b_0, camera)
-	# print(u)
-	# if np.hypot(traj[-1,0]-traj[0,0],traj[-1,1]-traj[0,1]) <0.1:
-	# 	pf = statics_map([blue[0].x, blue[0].y], end_point, blue, yellow, radius)
-	# 	pf.shorter_the_path(2, 10)
-	# 	path = pf.get_path()
 	distance = math.sqrt((blue[0].x - goal[0]) ** 2 + (blue[0].y - goal[1]) ** 2)
 	if distance <= 1:
 		speed = 0.2 + 2.3 * distance
 		if distance <= 0.1:
 			if i == 0:
 				k = 1
-				GOAL_FLAG=True
+				GOAL_FLAG = True
 			if i == len(path) - 1:
 				k = -1
-				GOAL_FLAG=False
+				GOAL_FLAG = False
 			i = i + k
 			goal = np.array([path[i][0], path[i][1]])
 			speed = 2.5
 
-
-	# if (np.hypot(ltraj[-1][0] - ltraj[0][0], ltraj[-1][1] - ltraj[0][1])) <0.1:
-	# 	if i > 1 or i < len(path)-2:
-	# 		config.to_goal_cost_gain+=1
 	debug = DBG()
 	debug.addPath_rrt(path, 4)  # 将路径画出来
 	# debug.addpath_dwa(ltraj)
 	debug.sendDebugMessage()  # debug信息发送
-# time.sleep(0.015)
-# chase2(blue[0],[path_x,path_y],ro_b_0,1,1)
